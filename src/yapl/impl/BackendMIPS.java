@@ -12,12 +12,17 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public int wordSize() {
-    return 0;
+    return 4; // always 4 bytes in MIPS
   }
 
   @Override
   public int boolValue(boolean value) {
-    return 0;
+    if (value == true) {
+      return 1;
+    }
+    else {
+      return 0;
+    }
   }
 
   @Override
