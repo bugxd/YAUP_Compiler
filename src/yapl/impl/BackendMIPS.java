@@ -1,13 +1,19 @@
 package yapl.impl;
 
+import static java.text.MessageFormat.format;
+
 import java.io.PrintStream;
 
 public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
-  private final PrintStream stream;
+  private final PrintStream outputStream;
 
-  public BackendMIPS (PrintStream stream) {
-    this.stream = stream;
+  public BackendMIPS (PrintStream outputStream) {
+    this.outputStream = outputStream;
+
+    if (outputStream == null) {
+      throw new IllegalArgumentException("outputStream must not be null!");
+    }
   }
 
   @Override
@@ -42,12 +48,12 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void comment(String comment) {
-
+    outputStream.append(format("% {0}\n", comment));
   }
 
   @Override
   public void emitLabel(String label, String comment) {
-
+    outputStream.append(format("{0}:\t\t% {1}\n", label, comment));
   }
 
   @Override
@@ -202,7 +208,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void jump(String label) {
-
+    outputStream.append(format("jr {0}\n", label));
   }
 
   @Override
@@ -212,7 +218,9 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void exitMain(String label) {
-
+    emitLabel(label, "main epilogue");
+    outputStream.append("li $v0 10\n");
+    outputStream.append("syscall\n");
   }
 
   @Override
