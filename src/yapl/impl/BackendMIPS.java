@@ -149,6 +149,12 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void neg(byte regDest, byte regX) {
+    Register destination = registers.getRegisterByNumber(regDest);
+    Register sourceX = registers.getRegisterByNumber(regX);
+    Register zeroRegister = registers.getRegisterByNumber((byte)0);
+
+    outputStream.append(format("nor {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+            zeroRegister ));
   }
 
   @Override
@@ -202,7 +208,14 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void mod(byte regDest, byte regX, byte regY) {
+    Register destination = registers.getRegisterByNumber(regDest);
+    Register sourceX = registers.getRegisterByNumber(regX);
+    Register sourceY = registers.getRegisterByNumber(regY);
 
+    outputStream.append(format("div {0}, {1}\n", sourceX.getName(), sourceY.getName() ));
+    outputStream.append(format("mfhi {0}\n", destination.getName()));
+    //mfhi = move from high register (high = mod)
+    //mflo = move from low register (low = div)
   }
 
   @Override
