@@ -62,6 +62,9 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     outputStream.append(format("# {0}\n", comment));
   }
 
+  /**
+   * label    #comment
+   */
   @Override
   public void emitLabel(String label, String comment) {
     outputStream.append(format("{0}:\t\t# {1}\n", label, comment));
@@ -77,9 +80,14 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     return 0;
   }
 
+  /**
+   * addi $sp,  $zero,   +/-<bytes>   #comment
+   */
   @Override
   public int allocStack(int bytes, String comment) {
-    return 0;
+    int bits = bytes*wordSize()
+    outputStream.append(format("addi\t$sp,\t{0},\t{1}\t{2}",zeroReg(),bits,comment));
+    return bits;  //TODO: Dont know what to return
   }
 
   @Override
@@ -99,37 +107,56 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void loadConst(byte reg, int value) {
-
+    Register destination = registers.getRegisterByNumber(reg);
+    outputStream.append(format("li\t{0},\t{1}",destination.getName(),value));
   }
 
   @Override
   public void loadAddress(byte reg, int addr, boolean isStatic) {
-
+    Register destination = registers.getRegisterByNumber(reg);
+    if(isStatic)
+      outputStream.append(format("la\t{0},\t{1}($gp)",destination.getName(),addr));
+    else
+      outputStream.append(format("la\t{0},\t{1}($sp)",destination.getName(),addr));
   }
 
   @Override
   public void loadWord(byte reg, int addr, boolean isStatic) {
-
+    Register destination = registers.getRegisterByNumber(reg);
+    if(isStatic)
+      outputStream.append(format("lw\t{0},\t{1}($gp)",destination.getName(),addr));
+    else
+      outputStream.append(format("lw\t{0},\t{1}($sp)",destination.getName(),addr));
   }
 
   @Override
   public void storeWord(byte reg, int addr, boolean isStatic) {
-
+    Register source = registers.getRegisterByNumber(reg);
+    if(isStatic)
+      outputStream.append(format("sw\t{0},\t{1}($gp)",source.getName(),addr));
+    else
+      outputStream.append(format("sw\t{0},\t{1}($sp)",source.getName(),addr));
   }
 
   @Override
   public void loadWordReg(byte reg, byte addrReg) {
-
+    Register destination = registers.getRegisterByNumber(reg);
+    Register address = registers.getRegisterByNumber(addrReg);
+    outputStream.append(format("lw\t{0},\t({1})",destination.getName(),address.getName()));
   }
 
   @Override
   public void loadWordReg(byte reg, byte addrReg, int offset) {
-
+    Register destination = registers.getRegisterByNumber(reg);
+    Register address = registers.getRegisterByNumber(addrReg);
+    outputStream.append(format("lw\t{0},\t{1}({2})",destination.getName(),offset,address.getName()));
   }
 
   @Override
   public void storeWordReg(byte reg, int addrReg) {
-
+    Register source = registers.getRegisterByNumber(reg);
+    Register address = registers.getRegisterByNumber(addrReg);
+    outputStream.append(format("sw\t{0},\t({1})",source.getName(),address.getName()));
   }
 
   @Override
@@ -289,26 +316,51 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     outputStream.append(format("j {0}\n", label));
   }
 
+  /**
+   * .globl main
+   * main:
+   */
   @Override
   public void enterMain() {
-
+    outputStream.append(".globl main\n");
+    emitLabel("main","main function entry point");
   }
 
+  /**
+   * main_epilogue:
+   * li $v0,  10
+   * syscall
+   */
   @Override
   public void exitMain(String label) {
     emitLabel(label, "main_epilogue");
-    outputStream.append("li $v0 10\n");
+    outputStream.append("li $v0, 10\n");
     outputStream.append("syscall\n");
+    registers.freeAllRegister();
   }
 
+  /**
+   * label:
+   * lw	<register 1>,	0($sp)
+   * lw	<register 2>,	4($sp)
+   * lw	<register 3>,	8($sp)
+   * ...
+   * lw <register n>,    <nParms*4>-4($sp)
+   * addi	$sp,	$sp,	<nParms*4>
+   */
   @Override
   public void enterProc(String label, int nParams) {
+    emitLabel(label,"");    //no comment
+    for(int i = 0; i < nParams*4; i += 4){
 
+      outputStream.append("lw\t");
+    }
   }
 
   @Override
   public void exitProc(String label) {
-
+    //TODO: some other stuff
+    registers.freeAllRegister();
   }
 
   @Override
