@@ -5,18 +5,18 @@ public final class Register {
   private final String name;
   private final byte registerNumber;
   private boolean inUse;
-  private boolean isWriteable;
+  private boolean writeable;
 
   public Register(byte registerNumber, String name) {
     this(registerNumber, name, false);
-    this.isWriteable = true;
+    this.writeable = true;
   }
 
   public Register(byte registerNumber, String name, boolean inUse) {
     this.name = name;
     this.registerNumber = registerNumber;
     this.inUse = inUse;
-    this.isWriteable = false;
+    this.writeable = false;
   }
 
   public String getName() {
@@ -31,7 +31,7 @@ public final class Register {
     return inUse;
   }
 
-  public boolean isWriteable() { return isWriteable; }
+  public boolean isWriteable() { return writeable; }
 
   public void setInUse(boolean inUse) {
     this.inUse = inUse;

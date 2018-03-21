@@ -77,8 +77,8 @@ public final class Registers {
   }
 
   public void freeAllRegister(){
-    for (Register r: Registers) {
-      if(r.isWriteable)
+    for (Register r: registers) {
+      if(r.isWriteable())
         r.setInUse(false);
     }
   }

@@ -85,8 +85,8 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
    */
   @Override
   public int allocStack(int bytes, String comment) {
-    int bits = bytes*wordSize()
-    outputStream.append(format("addi\t$sp,\t{0},\t{1}\t{2}",zeroReg(),bits,comment));
+    int bits = bytes*wordSize();
+    outputStream.append(format("\taddi\t$sp,\t{0},\t{1}\t{2}\n",zeroReg(),bits,comment));
     return bits;  //TODO: Dont know what to return
   }
 
@@ -97,71 +97,81 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void storeArrayDim(int dim, byte lenReg) {
-
+    //TODO: what he want?
   }
 
   @Override
   public void allocArray(byte destReg) {
-
+    Register destination = registers.getRegisterByNumber(destReg);
+    Register globlPointer = registers.getRegisterByNumber((byte)28);
+    outputStream.append(format("\tadd\t{0},\t{1},\t{2}\n",destination.getName(),zeroReg(),globlPointer.getName()));
   }
 
   @Override
   public void loadConst(byte reg, int value) {
     Register destination = registers.getRegisterByNumber(reg);
-    outputStream.append(format("li\t{0},\t{1}",destination.getName(),value));
+    outputStream.append(format("\tli\t{0},\t{1}\n",destination.getName(),value));
   }
 
   @Override
   public void loadAddress(byte reg, int addr, boolean isStatic) {
     Register destination = registers.getRegisterByNumber(reg);
     if(isStatic)
-      outputStream.append(format("la\t{0},\t{1}($gp)",destination.getName(),addr));
+      outputStream.append(format("\tla\t{0},\t{1}($gp)\n",destination.getName(),addr));
     else
-      outputStream.append(format("la\t{0},\t{1}($sp)",destination.getName(),addr));
+      outputStream.append(format("\tla\t{0},\t{1}($sp)\n",destination.getName(),addr));
   }
 
   @Override
   public void loadWord(byte reg, int addr, boolean isStatic) {
     Register destination = registers.getRegisterByNumber(reg);
     if(isStatic)
-      outputStream.append(format("lw\t{0},\t{1}($gp)",destination.getName(),addr));
+      outputStream.append(format("\tlw\t{0},\t{1}($gp)\n",destination.getName(),addr));
     else
-      outputStream.append(format("lw\t{0},\t{1}($sp)",destination.getName(),addr));
+      outputStream.append(format("\tlw\t{0},\t{1}($sp)\n",destination.getName(),addr));
   }
 
   @Override
   public void storeWord(byte reg, int addr, boolean isStatic) {
     Register source = registers.getRegisterByNumber(reg);
     if(isStatic)
-      outputStream.append(format("sw\t{0},\t{1}($gp)",source.getName(),addr));
+      outputStream.append(format("\tsw\t{0},\t{1}($gp)\n",source.getName(),addr));
     else
-      outputStream.append(format("sw\t{0},\t{1}($sp)",source.getName(),addr));
+      outputStream.append(format("\tsw\t{0},\t{1}($sp)\n",source.getName(),addr));
   }
 
   @Override
   public void loadWordReg(byte reg, byte addrReg) {
     Register destination = registers.getRegisterByNumber(reg);
     Register address = registers.getRegisterByNumber(addrReg);
-    outputStream.append(format("lw\t{0},\t({1})",destination.getName(),address.getName()));
+    outputStream.append(format("\tlw\t{0},\t({1})\n",destination.getName(),address.getName()));
   }
 
   @Override
   public void loadWordReg(byte reg, byte addrReg, int offset) {
     Register destination = registers.getRegisterByNumber(reg);
     Register address = registers.getRegisterByNumber(addrReg);
-    outputStream.append(format("lw\t{0},\t{1}({2})",destination.getName(),offset,address.getName()));
+    outputStream.append(format("\tlw\t{0},\t{1}({2})\n",destination.getName(),offset,address.getName()));
   }
 
   @Override
   public void storeWordReg(byte reg, int addrReg) {
     Register source = registers.getRegisterByNumber(reg);
-    Register address = registers.getRegisterByNumber(addrReg);
-    outputStream.append(format("sw\t{0},\t({1})",source.getName(),address.getName()));
+    //TOFIX: addrReg should be byte not int
+    Register address = registers.getRegisterByNumber((byte)addrReg);
+    outputStream.append(format("\tsw\t{0},\t({1})\n",source.getName(),address.getName()));
   }
 
   @Override
   public void arrayOffset(byte dest, byte baseAddr, byte index) {
+    Register destination = registers.getRegisterByNumber(dest);
+    Register baseAddrReg = registers.getRegisterByNumber(baseAddr);
+    Register indexReg = registers.getRegisterByNumber(index);
 
+    outputStream.append(format("\tmul\t{0},\t{0},\t4\n",indexReg.getName()));       //index *4
+    //TODO: la t0, index(base) ? add t0,base,index
+    outputStream.append(format("\tadd\t{0},\t{1},\t{2}\n",destination.getName(),baseAddrReg.getName(),indexReg.getName()));
+    outputStream.append(format("\tdiv\t{0},\t{0},\t4\n",indexReg.getName()));       //index /4        old value
   }
 
   @Override
@@ -180,7 +190,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register zeroRegister = registers.getRegisterByNumber((byte)0);
 
-    outputStream.append(format("nor {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tnor\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
             zeroRegister ));
   }
 
@@ -190,7 +200,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("add {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tadd\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                sourceY.getName() ));
   }
 
@@ -199,7 +209,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register destination = registers.getRegisterByNumber(regDest);
     Register sourceX = registers.getRegisterByNumber(regX);
 
-    outputStream.append(format("add {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tadd\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                value));
   }
 
@@ -209,7 +219,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("sub {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tsub\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                sourceY.getName() ));
   }
 
@@ -219,7 +229,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("mul {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tmul\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                sourceY.getName() ));
   }
 
@@ -229,7 +239,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("div {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tdiv\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                sourceY.getName() ));
   }
 
@@ -239,8 +249,8 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("div {0}, {1}\n", sourceX.getName(), sourceY.getName() ));
-    outputStream.append(format("mfhi {0}\n", destination.getName()));
+    outputStream.append(format("\tdiv\t{0},\t{1}\n", sourceX.getName(), sourceY.getName() ));
+    outputStream.append(format("\tmfhi\t{0}\n", destination.getName()));
     //mfhi = move from high register (high = mod)
     //mflo = move from low register (low = div)
   }
@@ -251,7 +261,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("slt {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tslt\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                sourceY.getName() ));
   }
 
@@ -261,7 +271,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("sle {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tsle\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                sourceY.getName() ));
   }
 
@@ -271,7 +281,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("seq {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tseq\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                sourceY.getName() ));
   }
 
@@ -280,7 +290,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register destination = registers.getRegisterByNumber(regDest);
     Register source = registers.getRegisterByNumber(regSrc);
 
-    outputStream.append(format("not {0}, {1}\n", destination.getName(), source.getName()));
+    outputStream.append(format("\tnot\t{0},\t{1}\n", destination.getName(), source.getName()));
   }
 
   @Override
@@ -289,7 +299,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("and {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tand\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                sourceY.getName() ));
   }
 
@@ -299,7 +309,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     Register sourceX = registers.getRegisterByNumber(regX);
     Register sourceY = registers.getRegisterByNumber(regY);
 
-    outputStream.append(format("or {0}, {1}, {2}\n", destination.getName(), sourceX.getName(),
+    outputStream.append(format("\tor\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(),
                                sourceY.getName() ));
   }
 
@@ -307,7 +317,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   public void branchIf(byte reg, boolean value, String label) {
     Register register = registers.getRegisterByNumber(reg);
 
-    outputStream.append(format("beq {0}, {1}, {2}\n", register.getName(), this.boolValue(value),
+    outputStream.append(format("\tbeq\t{0},\t{1},\t{2}\n", register.getName(), this.boolValue(value),
                                    label));
   }
 
@@ -322,7 +332,6 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
    */
   @Override
   public void enterMain() {
-    outputStream.append(".globl main\n");
     emitLabel("main","main function entry point");
   }
 
@@ -334,8 +343,9 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   @Override
   public void exitMain(String label) {
     emitLabel(label, "main_epilogue");
-    outputStream.append("li $v0, 10\n");
-    outputStream.append("syscall\n");
+    outputStream.append(".globl main\n");
+    outputStream.append("\tli\t$v0,\t10\n");
+    outputStream.append("\tsyscall\n");
     registers.freeAllRegister();
   }
 
@@ -352,8 +362,8 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   public void enterProc(String label, int nParams) {
     emitLabel(label,"");    //no comment
     for(int i = 0; i < nParams*4; i += 4){
-
-      outputStream.append("lw\t");
+      //TODO: finish for
+      outputStream.append("\tlw\t");
     }
   }
 
@@ -375,7 +385,10 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void passArg(int arg, byte reg) {
-
+    Register register = registers.getRegisterByNumber(reg);
+    Register stackPointer = registers.getRegisterByNumber((byte)29);
+    allocStack(1,"pass argument");
+    outputStream.append(format("\tsw\t{0},\t0({1})\n",register.getName(),stackPointer.getName()));
   }
 
   @Override

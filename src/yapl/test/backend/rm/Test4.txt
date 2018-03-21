@@ -1,3 +1,10 @@
-Mär 16, 2018 11:48:35 PM java.util.prefs.WindowsPreferences <init>
+Mär 21, 2018 4:23:54 PM java.util.prefs.WindowsPreferences <init>
 WARNING: Could not open/create prefs root node Software\JavaSoft\Prefs at root 0x80000002. Windows RegCreateKeyEx(...) returned error code 5.
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test4.asm line 2 column 2: "lw": Too many or incorrectly formatted operands. Expected: lw $t1,-100($t2)
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test4.asm line 8 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test4.asm line 12 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test4.asm line 16 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test4.asm line 19 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test4.asm line 21 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
 
+Processing terminated due to errors.

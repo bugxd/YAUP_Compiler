@@ -1,5 +1,7 @@
-Mär 16, 2018 11:48:34 PM java.util.prefs.WindowsPreferences <init>
-Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test3.asm line 2 column 3: Symbol "writeboolean_end" not found in symbol table.
-
+Mär 21, 2018 4:23:54 PM java.util.prefs.WindowsPreferences <init>
 WARNING: Could not open/create prefs root node Software\JavaSoft\Prefs at root 0x80000002. Windows RegCreateKeyEx(...) returned error code 5.
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test3.asm line 2 column 2: "lw": Too many or incorrectly formatted operands. Expected: lw $t1,-100($t2)
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test3.asm line 8 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test3.asm line 11 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
+
 Processing terminated due to errors.
