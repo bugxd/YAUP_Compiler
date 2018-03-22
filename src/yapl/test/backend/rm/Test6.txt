@@ -1,7 +1,5 @@
-Mär 21, 2018 4:23:55 PM java.util.prefs.WindowsPreferences <init>
-WARNING: Could not open/create prefs root node Software\JavaSoft\Prefs at root 0x80000002. Windows RegCreateKeyEx(...) returned error code 5.
-Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test6.asm line 2 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
-Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test6.asm line 16 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
-Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test6.asm line 21 column 2: "addi": Too many or incorrectly formatted operands. Expected: addi $t1,$t2,-100
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test6.asm line 11 column 12: "0": operand is of incorrect type
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test6.asm line 25 column 12: "0": operand is of incorrect type
+Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test6.asm line 33 column 12: "0": operand is of incorrect type
 
 Processing terminated due to errors.
