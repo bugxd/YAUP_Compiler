@@ -403,11 +403,11 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   /**
    * label:
-   * lw	<register 1>,	0($sp)
-   * lw	<register 2>,	4($sp)
-   * lw	<register 3>,	8($sp)
+   * sw	<register 1>,	0($sp)
+   * sw	<register 2>,	4($sp)
+   * sw	<register 3>,	8($sp)
    * ...
-   * lw <register n>,    <nParms*4>-4($sp)
+   * sw <register n>,    <nParms*4>-4($sp)
    * addi	$sp,	$sp,	<nParms*4>
    */
   @Override
@@ -415,7 +415,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     emitLabel(label, "");    //no comment
     for (int i = 0; i < nParams * 4; i += 4) {
       //TODO: finish for
-      outputStream.append("\tlw\t");
+      outputStream.append("\tsw\t");
     }
   }
 
