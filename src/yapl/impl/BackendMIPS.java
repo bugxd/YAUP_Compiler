@@ -107,22 +107,25 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     );
   }
 
-  /**
-   * addi $sp,  $zero,   +/-<bytes>   #comment
-   */
   @Override
   public int allocStack(int bytes, String comment) {
-    int bits = bytes * wordSize();
-
-    outputStream.append(format("\taddi\t$sp,\t{0},\t{1}", zeroReg(), bits));
+    StackPointerRegister stackPointerRegister = registers.getStackPointerRegister();
+    int offset = stackPointerRegister.allocateBytes(bytes, wordSize());
     comment(comment);
-
-    return bits;  //TODO: Dont know what to return
+    return offset;
   }
 
   @Override
   public void allocHeap(byte destReg, int bytes) {
-
+    Register register = registers.getRegisterByNumber(destReg);
+    outputStream.append(
+        format("\tli\t$a0,\t{0}\n", bytes)
+    );
+    // TODO: 22.03.18 ENUM for SYSCALL CODES!
+    // AND WRITE SYSCALL METHOD
+    outputStream.append("\tli\t$v0,\t9\n");
+    outputStream.append("syscall\n");
+    outputStream.append(format("\tmove\t{0},\t$v0\n", register.getName()));
   }
 
   @Override

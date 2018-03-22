@@ -11,7 +11,7 @@ import java.util.Optional;
 public final class Registers {
 
   private Register zeroRegister;
-  private Register stackPointerRegister;
+  private StackPointerRegister stackPointerRegister;
   private GlobalPointerRegister globalPointerRegister;
   private Register framePointerRegister;
   private Register returnAddressRegister;
@@ -35,7 +35,7 @@ public final class Registers {
     kernelRegister0 = new Register((byte) 26, "$k0", true);
     kernelRegister1 = new Register((byte) 27, "$k1", true);
     globalPointerRegister = new GlobalPointerRegister();
-    stackPointerRegister = new Register((byte) 29, "$sp", true);
+    stackPointerRegister = new StackPointerRegister();
     framePointerRegister = new Register((byte) 30, "$fp", true);
     returnAddressRegister = new Register((byte) 31, "$ra", true);
 
@@ -71,7 +71,7 @@ public final class Registers {
     return zeroRegister;
   }
 
-  public Register getStackPointerRegister() {
+  public StackPointerRegister getStackPointerRegister() {
     return stackPointerRegister;
   }
 
