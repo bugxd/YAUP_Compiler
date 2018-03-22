@@ -360,10 +360,17 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
    */
   @Override
   public void enterProc(String label, int nParams) {
+    Register stackPointer = registers.getRegisterByNumber((byte)29);
     emitLabel(label,"");    //no comment
+    Optional<Register> r;
     for(int i = 0; i < nParams*4; i += 4){
-      //TODO: finish for
-      outputStream.append("\tlw\t");
+      //TODO: how to know which register is now in use for which parameter
+      r = registers.getUnusedRegister();
+      if(r.isPresent())
+        outputStream.append(format("\tlw\t{0},\t{1}({2})",r.get().getName(),i,stackPointer.getName()));
+      else
+        System.out.println("no more registers available");//TODO throw exception
+
     }
   }
 
