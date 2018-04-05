@@ -22,11 +22,15 @@ public final class StackPointerRegister extends Register{
     throw new IllegalArgumentException("No space left in static data area!");
   }
 
-  private int doWordAlignment(int numberOfBytes, int wordSize) {
+  public int doWordAlignment(int numberOfBytes, int wordSize) {
     int rest = numberOfBytes % wordSize;
     if (rest != 0) {
       numberOfBytes = numberOfBytes + (wordSize - numberOfBytes % wordSize);
     }
     return  numberOfBytes;
+  }
+
+  public int getCurrentOffset() {
+    return currentMinusOffset;
   }
 }

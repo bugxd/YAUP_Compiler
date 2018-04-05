@@ -2,7 +2,7 @@ package yapl.impl;
 
 public final class GlobalPointerRegister extends Register {
 
-  private static final int MAXIMUM_OFFSET = 64000;
+  private static final int MAXIMUM_OFFSET = 65563;
 
   private int currentPlusOffset;
   private int currentMinusOffset;
@@ -10,7 +10,7 @@ public final class GlobalPointerRegister extends Register {
   public GlobalPointerRegister( ) {
     super((byte) 28, "$gp", true);
     this.currentMinusOffset = 0;
-    this.currentPlusOffset = 0;
+    this.currentPlusOffset = 32768;
   }
 
   public int allocateBytes(int numberOfBytes, int wordSize) {
