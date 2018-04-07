@@ -12,6 +12,8 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   private       Segment currentSegment;
 
   private final int wordAlignmentParameter = 2;
+  private static final int NUMBER_RESERVED_PASSED_STACKARGUMENTS = 1;
+  private static final int NUMBER_RESERVED_INNER_STACKARGUMENTS = 1;
 
   public BackendMIPS(PrintStream outputStream) {
     this.outputStream = outputStream;
@@ -423,17 +425,6 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
                                sourceY.getName()));
   }
 
-  private void divConst(byte regDest, byte regX, int value) {
-
-    changeSegment(Segment.TEXT);
-    Register destination = registers.getRegisterByNumber(regDest);
-    Register sourceX = registers.getRegisterByNumber(regX);
-
-    outputStream.append(
-            format("\tdiv\t{0},\t{1},\t{2}\n", destination.getName(), sourceX.getName(), String.valueOf(value))
-    );
-  }
-
   @Override
   public void mod(byte regDest, byte regX, byte regY) {
 
@@ -571,11 +562,16 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void enterProc(String label, int nParams) {
-    registers.getStackPointerRegister().requestNewOffset();
-    registers.getStackPointerRegister().allocateBytes(nParams*wordSize(), wordSize());
 
     changeSegment(Segment.TEXT);
     emitLabel(label, "");
+
+    registers.getStackPointerRegister().requestNewOffset();
+    int raAddress = allocStack(wordSize(), "make place for return address");
+    storeWord(registers.getReturnAddressRegister().getRegisterNumber(), raAddress, false);
+
+    registers.getStackPointerRegister().allocateBytes(nParams*wordSize(), wordSize());
+
   }
 
   @Override
@@ -583,15 +579,17 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     changeSegment(Segment.TEXT);
 
     emitLabel(label, "procedure_epilogue");
-    byte helperRegister = allocReg();
-    assert helperRegister != -1;
     move(registers.getStackPointerRegister().getRegisterNumber(), registers.getFramePointerRegister().getRegisterNumber());
-    addConst(registers.getStackPointerRegister().getRegisterNumber(), registers.getStackPointerRegister().getRegisterNumber(), wordSize()); // eliminate place on stack where old framepointer was stored
-    loadWord(registers.getFramePointerRegister().getRegisterNumber(), 0, false);  // LOAD old framepointer
+
+    comment("Eliminate place on stack where preserved arguments (old frame pointer) were stored");
+    addConst(registers.getStackPointerRegister().getRegisterNumber(), registers.getStackPointerRegister().getRegisterNumber(), NUMBER_RESERVED_PASSED_STACKARGUMENTS * wordSize()); // eliminate place on stack where old framepointer was stored
+    comment("Load old framepointer and return address");
+    loadWord(registers.getReturnAddressRegister().getRegisterNumber(), -wordSize(), false);
+    loadWord(registers.getFramePointerRegister().getRegisterNumber(), 0, false);
+
     jumpRegister(registers.getReturnAddressRegister().getRegisterNumber());
 
     registers.getStackPointerRegister().deleteCurrentOffset();
-    freeReg(helperRegister);
   }
 
   private void jumpRegister(byte reg) {
@@ -644,12 +642,12 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     if (reg != -1) {
       move(reg, registers.getV0().getRegisterNumber());
     }
-    registers.getStackPointerRegister().freeBytes(wordSize()*2, wordSize());
+    registers.getStackPointerRegister().freeBytes(wordSize()*(NUMBER_RESERVED_PASSED_STACKARGUMENTS + 1), wordSize());
   }
 
   @Override
   public int paramOffset(int index) {
-    return -(index+1) * wordSize();
+    return -(index+NUMBER_RESERVED_INNER_STACKARGUMENTS+NUMBER_RESERVED_PASSED_STACKARGUMENTS) * wordSize();
   }
 
   private void writePredefinedProcedures() {
