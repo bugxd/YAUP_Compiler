@@ -1,22 +1,28 @@
 package yapl.impl;
 
+import java.util.Stack;
+
 public final class StackPointerRegister extends Register{
 
   // FIXME: 22.03.18 find out maxvalue
-  private static final int MAXIMUM_OFFSET = 10_000;
-  private int currentMinusOffset;
+  private static final int MAXIMUM_OFFSET = -10_000;
+  private Stack<Integer> framePointerOffsetStack;
 
   public StackPointerRegister() {
     super((byte) 29, "$sp", true);
-    this.currentMinusOffset = 0;
+    this.framePointerOffsetStack = new Stack<>();
   }
 
   public int allocateBytes(int numberOfBytes, int wordSize) {
     numberOfBytes = doWordAlignment(numberOfBytes, wordSize);
 
-    if (currentMinusOffset + numberOfBytes <= MAXIMUM_OFFSET) {
-      currentMinusOffset += numberOfBytes;
-      return -currentMinusOffset;
+    int currentMinusOffset = framePointerOffsetStack.peek();
+    if (currentMinusOffset - numberOfBytes >= MAXIMUM_OFFSET) {
+      currentMinusOffset -= numberOfBytes;
+      this.framePointerOffsetStack.pop();
+      this.framePointerOffsetStack.push(currentMinusOffset);
+
+      return currentMinusOffset;
     }
 
     throw new IllegalArgumentException("No space left in static data area!");
@@ -30,7 +36,22 @@ public final class StackPointerRegister extends Register{
     return  numberOfBytes;
   }
 
+  public void freeBytes(int numberOfBytes, int wordSize) {
+    int wordAlignedBytes = doWordAlignment(numberOfBytes, wordSize);
+    int currentOffset = framePointerOffsetStack.pop();
+    currentOffset += wordAlignedBytes;
+    framePointerOffsetStack.push(currentOffset);
+  }
+
   public int getCurrentOffset() {
-    return currentMinusOffset;
+    return framePointerOffsetStack.peek();
+  }
+
+  public void requestNewOffset() {
+    framePointerOffsetStack.push(0);
+  }
+
+  public void deleteCurrentOffset() {
+    framePointerOffsetStack.pop();
   }
 }

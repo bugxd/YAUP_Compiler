@@ -19,14 +19,27 @@ public final class Registers {
   private Register kernelRegister0;
   private Register kernelRegister1;
 
-  private List<Register> returnValueRegisters;
-  private List<Register> argumentRegisters;
+  private Register V0;
+  private Register V1;
+  private Register A0;
+  private Register A1;
+  private Register A2;
+  private Register A3;
+
+  private Register arrayLengthRegister;
+
   private List<Register> temporaryRegisters;
   private List<Register> savedRegisters;
 
   public Registers() {
-    returnValueRegisters = new ArrayList<>();
-    argumentRegisters = new ArrayList<>();
+
+    V0 = new Register((byte) 2, "$v0", true);
+    V1 = new Register((byte) 3, "$v1", true);
+    A0 = new Register((byte) 4, "$a0");
+    A1 = new Register((byte) 5, "$a1");
+    A2 = new Register((byte) 6, "$a2");
+    A3 = new Register((byte) 7, "$a3");
+
     temporaryRegisters = new ArrayList<>();
     savedRegisters = new ArrayList<>();
 
@@ -38,13 +51,6 @@ public final class Registers {
     stackPointerRegister = new StackPointerRegister();
     framePointerRegister = new Register((byte) 30, "$fp", true);
     returnAddressRegister = new Register((byte) 31, "$ra", true);
-
-    returnValueRegisters.add(new Register((byte) 2, "$v0"));
-    returnValueRegisters.add(new Register((byte) 3, "$v1"));
-    argumentRegisters.add(new Register((byte) 4, "$a0"));
-    argumentRegisters.add(new Register((byte) 5, "$a1"));
-    argumentRegisters.add(new Register((byte) 6, "$a2"));
-    argumentRegisters.add(new Register((byte) 7, "$a3"));
 
     temporaryRegisters.add(new Register((byte) 8, "$t0"));
     temporaryRegisters.add(new Register((byte) 9, "$t1"));
@@ -64,7 +70,8 @@ public final class Registers {
     savedRegisters.add(new Register((byte) 22, "$s4"));
     savedRegisters.add(new Register((byte) 23, "$s5"));
     savedRegisters.add(new Register((byte) 24, "$s6"));
-    savedRegisters.add(new Register((byte) 25, "$s7"));
+
+    arrayLengthRegister = new Register((byte) 25, "$s7", true); // We use s7 to store array length
   }
 
   public Register getZeroRegister() {
@@ -108,6 +115,20 @@ public final class Registers {
         return zeroRegister;
       case 1:
         return atRegister;
+      case 2:
+        return V0;
+      case 3:
+        return V1;
+      case 4:
+        return A0;
+      case 5:
+        return A1;
+      case 6:
+        return A2;
+      case 7:
+        return A3;
+      case 25:
+        return arrayLengthRegister;
       case 26:
         return kernelRegister0;
       case 27:
@@ -129,18 +150,6 @@ public final class Registers {
     }
 
     for (Register register : savedRegisters) {
-      if (register.getRegisterNumber() == registerNumber) {
-        return register;
-      }
-    }
-
-    for (Register register : returnValueRegisters) {
-      if (register.getRegisterNumber() == registerNumber) {
-        return register;
-      }
-    }
-
-    for (Register register : argumentRegisters) {
       if (register.getRegisterNumber() == registerNumber) {
         return register;
       }
@@ -177,5 +186,33 @@ public final class Registers {
     for (Register register : savedRegisters) {
       register.setInUse(false);
     }
+  }
+
+  public Register getV0() {
+    return V0;
+  }
+
+  public Register getV1() {
+    return V1;
+  }
+
+  public Register getA0() {
+    return A0;
+  }
+
+  public Register getA1() {
+    return A1;
+  }
+
+  public Register getA2() {
+    return A2;
+  }
+
+  public Register getA3() {
+    return A3;
+  }
+
+  public Register getArrayLengthRegister() {
+    return arrayLengthRegister;
   }
 }
