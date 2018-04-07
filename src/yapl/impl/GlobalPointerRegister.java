@@ -10,7 +10,7 @@ public final class GlobalPointerRegister extends Register {
   public GlobalPointerRegister( ) {
     super((byte) 28, "$gp", true);
     this.currentMinusOffset = 0;
-    this.currentPlusOffset = 32768;
+    this.currentPlusOffset = 32768; // 32768 is the byte offset between the address, $gp points to (0x8000), and the address where the first entry of the data segment is written to (0x10000).
   }
 
   public int allocateBytes(int numberOfBytes, int wordSize) {
