@@ -302,14 +302,16 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   public void arrayOffset(byte dest, byte baseAddr, byte index) {
 
     changeSegment(Segment.TEXT);
-    Register destination = registers.getRegisterByNumber(dest);
-    Register baseAddrReg = registers.getRegisterByNumber(baseAddr);
-    Register indexReg = registers.getRegisterByNumber(index);
 
-    mulConst(indexReg.getRegisterNumber(), indexReg.getRegisterNumber(), wordSize());
-    add(destination.getRegisterNumber(), baseAddrReg.getRegisterNumber(), indexReg.getRegisterNumber());
-    addConst(destination.getRegisterNumber(), destination.getRegisterNumber(), wordSize()); // shift index by 1 element because array[0] holds the array's length
-    divConst(indexReg.getRegisterNumber(), indexReg.getRegisterNumber(), wordSize());  //index /4       restore old value
+    byte helperReg = allocReg();
+    assert helperReg != -1;
+    add(helperReg, index, registers.getZeroRegister().getRegisterNumber());
+    comment("multiply index with word size (4)");
+    mulConst(helperReg, helperReg, wordSize());
+    comment("add word size (4) because a[0] is actually the array header and not the first element. so we have to shift by 1 element.");
+    addConst(helperReg, helperReg, wordSize());
+    add(dest, baseAddr, helperReg);
+    freeReg(helperReg);
   }
 
   @Override
@@ -570,6 +572,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   @Override
   public void enterProc(String label, int nParams) {
     registers.getStackPointerRegister().requestNewOffset();
+    registers.getStackPointerRegister().allocateBytes(nParams*wordSize(), wordSize());
 
     changeSegment(Segment.TEXT);
     emitLabel(label, "");
@@ -582,14 +585,13 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     emitLabel(label, "procedure_epilogue");
     byte helperRegister = allocReg();
     assert helperRegister != -1;
-    //loadWord(helperRegister, -4, false); // LOAD NUMBER OF ARGUMENTS
-    //freeStackReg(helperRegister);
     move(registers.getStackPointerRegister().getRegisterNumber(), registers.getFramePointerRegister().getRegisterNumber());
     addConst(registers.getStackPointerRegister().getRegisterNumber(), registers.getStackPointerRegister().getRegisterNumber(), wordSize()); // eliminate place on stack where old framepointer was stored
     loadWord(registers.getFramePointerRegister().getRegisterNumber(), 0, false);  // LOAD old framepointer
     jumpRegister(registers.getReturnAddressRegister().getRegisterNumber());
 
     registers.getStackPointerRegister().deleteCurrentOffset();
+    freeReg(helperRegister);
   }
 
   private void jumpRegister(byte reg) {
