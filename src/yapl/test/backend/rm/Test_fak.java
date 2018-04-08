@@ -66,7 +66,6 @@ public class Test_fak {
         nReg = backend.allocReg();
 
 
-
         backend.freeReg(nReg);
         backend.exitProc("fak_end");                    //}
     }
