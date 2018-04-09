@@ -25,8 +25,10 @@ public enum SyscallCode {
         return value;
     }
 
+    /* actually never used
     @Override
     public String toString() {
         return String.valueOf(value);
     }
+    */
 }

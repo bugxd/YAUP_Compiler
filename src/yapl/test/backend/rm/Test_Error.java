@@ -6,7 +6,7 @@ import yapl.interfaces.BackendAsmRM;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-public class Test_ErrorBackendMIPS {
+public class Test_Error {
     private static BackendAsmRM backend;
 
     public static void main(String[] args) throws Exception {

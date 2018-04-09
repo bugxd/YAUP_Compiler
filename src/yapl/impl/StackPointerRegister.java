@@ -43,9 +43,11 @@ public final class StackPointerRegister extends Register{
     framePointerOffsetStack.push(currentOffset);
   }
 
+  /* actually never used
   public int getCurrentOffset() {
     return framePointerOffsetStack.peek();
   }
+  */
 
   public void requestNewOffset() {
     framePointerOffsetStack.push(0);
