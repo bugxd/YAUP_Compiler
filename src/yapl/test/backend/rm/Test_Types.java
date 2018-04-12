@@ -71,6 +71,16 @@ public class Test_Types {
         backend.writeString(addrSeparator);
         backend.isLessOrEqual(R3, R1, R2);
         callProc("writeint", R3);
+        backend.writeString(addrSeparator);
+
+        byte R4 = backend.allocReg();
+        backend.loadConst(R4, 4);
+        backend.storeArrayDim(0, R4);
+        byte R5 = backend.allocReg();
+        backend.allocArray(R5);
+        backend.arrayLength(R4, R5);
+
+        callProc("writeint", R4);
 
         backend.exitMain("exit");
     }
