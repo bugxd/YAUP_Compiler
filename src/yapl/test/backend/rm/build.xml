@@ -17,7 +17,7 @@
     <property name="asm-predefined" location="${topdir}/predefined.asm"/>
 
     <!-- list of Java test classes -->
-    <property name="testclasses" value="Test1,Test2,Test3,Test4,Test5,Test6"/>
+    <property name="testclasses" value="Test1,Test2,Test3,Test4,Test5,Test6,Test_Error, Test_IfElse, Test_Types"/>
     
     <!-- properties for invoking 'eval' target directly -->
     <property name="mainclass" value="yapl.test.backend.rm.Test1"/>
