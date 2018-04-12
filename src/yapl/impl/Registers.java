@@ -215,4 +215,12 @@ public final class Registers {
   public Register getArrayLengthRegister() {
     return arrayLengthRegister;
   }
+
+  public List<Register> getTemporaryRegisters() {
+    return temporaryRegisters;
+  }
+
+  public List<Register> getSavedRegisters() {
+    return savedRegisters;
+  }
 }
