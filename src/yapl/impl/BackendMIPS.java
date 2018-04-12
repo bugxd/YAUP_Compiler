@@ -340,18 +340,8 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
 
   @Override
   public void neg(byte regDest, byte regX) {
-
     changeSegment(Segment.TEXT);
-    Register destination = registers.getRegisterByNumber(regDest);
-    Register sourceX = registers.getRegisterByNumber(regX);
-
-    outputStream.append(
-        format("\tnor\t{0},\t{1},\t{2}\n",
-               destination.getName(),
-               sourceX.getName(),
-               registers.getZeroRegister().getName()
-        )
-    );
+    mulConst(regDest, regX, -1);
   }
 
   @Override
@@ -662,7 +652,6 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     byte r = allocReg();
     loadWord(r, paramOffset(0), false);
     move(registers.getA0().getRegisterNumber(), r);
-    freeReg(r);
     loadConst(registers.getV0().getRegisterNumber(), SyscallCode.PRINT_INT.getValue());
     syscall();
     returnFromProc("writeint_end", (byte) -1);
