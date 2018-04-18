@@ -1,5 +1,5 @@
 options {
-  LOOKAHEAD = 1;
+  LOOKAHEAD = 2;
   CHOICE_AMBIGUITY_CHECK = 2;
   OTHER_AMBIGUITY_CHECK = 1;
   STATIC = true;
@@ -37,18 +37,18 @@ PARSER_END(CA2_1)
 void Input() :
 {}
 {
-  S() ("\n"|"\r")* <EOF>
+  S() ("\n" |"\r" |<EOF>)
 }
 
 /** Brace matching production. */
 void S() :
 {}
 {
-  ()()
+  (A() | "a") "c"
 }
 
 void A() :
 {}
 {
-  ""
+  "a"A() | "b"
 }
