@@ -1,0 +1,7 @@
+java -cp C:\Users\Sonja\Desktop\UNI_SS18\UE_Compilerbau\YAUP_Compiler\CA2\javacc-6.0\bin\lib\javacc.jar javacc C:\Users\Sonja\Desktop\UNI_SS18\UE_Compilerba
+u\YAUP_Compiler\CA2\javacc-6.0\examples\SimpleExamples\Simple1.jj
+
+javac Simple1.java
+
+java Simple1
+
