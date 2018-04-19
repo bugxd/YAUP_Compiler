@@ -1,0 +1,800 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a8353267-ec0f-4bb0-9f3b-db4ab99651a6" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/.gitignore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/README.docx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/README.pdf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/impl/BackendMIPS.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/impl/GlobalPointerRegister.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/impl/Register.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/impl/Registers.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/interfaces/BackendAsmRM.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/test/backend/rm/Test1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/test/backend/rm/Test2.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/test/backend/rm/Test3.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/test/backend/rm/Test4.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/test/backend/rm/Test5.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/classes/yapl/test/backend/rm/Test6.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/mitschriften/Mitschrift_08_03_CA1.pdf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/resources/ant-contrib.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/resources/mars.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/impl/BackendMIPS.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/impl/GlobalPointerRegister.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/impl/Register.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/impl/Registers.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/impl/Segment.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/impl/StackPointerRegister.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/impl/SyscallCode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/interfaces/BackendAsmRM.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test1.asm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test1.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test1.true" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test1.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test2.asm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test2.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test2.true" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test2.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test3.asm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test3.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test3.true" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test3.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test4.asm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test4.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test4.true" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test4.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test5.asm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test5.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test5.true" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test5.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test6.asm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test6.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test6.true" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test6.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test_Types.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/Test_Types.true" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA1/src/yapl/test/backend/rm/build.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/.idea/misc.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/.idea/modules.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/.idea/workspace.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/Scanner_Parser.iml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/LICENSE" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/ParseException.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/ParseException.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/Simple1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/Simple1.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/Simple1Constants.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/Simple1Constants.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/Simple1TokenManager.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/Simple1TokenManager.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/SimpleCharStream.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/SimpleCharStream.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/Token.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/Token.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/TokenMgrError.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/TokenMgrError.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/bin/lib/javacc.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/CharStream.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/JJDoc.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/JJTree.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/JavaCC.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/JavaCC.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/apiroutines.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/commandline.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/docindex.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/errorrecovery.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/features.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/index.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/installhelp.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/javacc-c++-releasenotes.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/javaccgrm.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/javaccreleasenotes.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/jjdocreleasenotes.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/jjtree-c++-releasenotes.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/jjtreeREADME.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/jjtreeintro.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/jjtreereleasenotes.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/lexertips.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/lookahead.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/mailinglist.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/simpleREADME.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/support.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/doc/tokenmanager.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/CORBA-IDL/Hello.idl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/CORBA-IDL/IDL.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/CORBA-IDL/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/ParserVersion/CalcGUI.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/ParserVersion/CalcInput.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/ParserVersion/Main.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/ParserVersion/ProducerConsumer.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/ParserVersion/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/ParserVersion/TokenCollector.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/TokenMgrVersion/CalcGUI.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/TokenMgrVersion/CalcInput.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/TokenMgrVersion/CharCollector.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/TokenMgrVersion/Main.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/TokenMgrVersion/MyLexer.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/GUIParsing/TokenMgrVersion/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTAddNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTAndNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTAssignment.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTBitwiseAndNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTBitwiseComplNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTBitwiseOrNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTBitwiseXorNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTBlock.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTCompilationUnit.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTDivNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTEQNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTFalseNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTGENode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTGTNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTId.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTIfStatement.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTIntConstNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTLENode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTLTNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTModNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTMulNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTNENode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTNotNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTOrNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTReadStatement.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTStatementExpression.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTSubtractNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTTrueNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTVarDeclaration.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTWhileStatement.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/ASTWriteStatement.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/MyNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/Node.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/SPL.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/SPL.jjt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/fact.spl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/odd.spl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Interpreter/sqrt.spl" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JJTreeExamples/ASTMyID.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JJTreeExamples/ASTMyOtherID.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JJTreeExamples/Eg4DumpVisitor.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JJTreeExamples/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JJTreeExamples/build.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JJTreeExamples/eg1.jjt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JJTreeExamples/eg2.jjt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JJTreeExamples/eg3.jjt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JJTreeExamples/eg4.jjt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaCCGrammar/JavaCC.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/1.5/Java1.5.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/1.5/JavaGenerics.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/1.5/Main.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/1.5/MyToken.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/1.5/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/1.5/Test.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/1.5/build.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/Java1.0.2.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/Java1.0.2LS.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/Java1.1-cpp.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/Java1.1.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/Java1.1noLA.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/OPTIMIZING" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/Test.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/cpp/Java1.1.jjt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/cpp/Makefile" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/cpp/allmain.cc" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/cpp/main.cc" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/cpp/myparser.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/cpp/mytm.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/JavaGrammars/cpp/token_base.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example1.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example10.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example2.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example3.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example4.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example5.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example6.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example7.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example8.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/Example9.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Lookahead/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/MailProcessing/Digest.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/MailProcessing/Faq.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/MailProcessing/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/MailProcessing/sampleMailFile" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/Globals.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/IdsFile.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/Java1.1.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/Main.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/MapFile.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/Obfuscator.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/input/package1/Main.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/input/package2/Incr.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/maps" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/nochangeids" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Obfuscator/useids" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/SimpleExamples/CMD_Befehle.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/SimpleExamples/IdList.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/SimpleExamples/NL_Xlator.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/SimpleExamples/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/SimpleExamples/Simple1.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/SimpleExamples/Simple2.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/SimpleExamples/Simple3.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Transformer/ASTCompilationUnit.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Transformer/ASTSpecialBlock.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Transformer/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Transformer/SimpleNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Transformer/ToyJava.jjt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/Transformer/divide.toy" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/VTransformer/AddAcceptVisitor.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/VTransformer/Java1.1.jjt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/VTransformer/Main.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/VTransformer/README" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/VTransformer/SimpleNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc-6.0/examples/VTransformer/UnparseVisitor.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/javacc.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/src/CA2_1.jj" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CA2/src/CA2_2.jj" afterPath="" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/YAUP_Compiler$Test_fak.coverage" NAME="Test_fak Coverage Results" MODIFIED="1523118378499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>backend.rm.*</FILTER>
+    </SUITE>
+  </component>
+  <component name="FileEditorManager">
+    <leaf />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>alloc</find>
+      <find>enter</find>
+      <find>stack</find>
+      <find>storeword</find>
+      <find>allocS</find>
+      <find>outputStream</find>
+      <find>prepareProcCall</find>
+      <find>loadWo</find>
+      <find>storeW</find>
+      <find>allocStati</find>
+      <find>storeArrayDim</find>
+      <find>pass</find>
+      <find>enterP</find>
+      <find>currentOffset</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GradleLocalSettings">
+    <option name="externalProjectsViewState">
+      <projects_view />
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/yapl/impl/Procedure.java" />
+        <option value="$PROJECT_DIR$/src/yapl/impl/Register.java" />
+        <option value="$PROJECT_DIR$/src/yapl/impl/Registers.java" />
+        <option value="$PROJECT_DIR$/src/yapl/test/backend/rm/Test3.asm" />
+        <option value="$PROJECT_DIR$/src/yapl/test/backend/rm/Test1.asm" />
+        <option value="$PROJECT_DIR$/src/yapl/test/backend/rm/Test1.txt" />
+        <option value="$PROJECT_DIR$/src/yapl/impl/BackendMIPS.java" />
+        <option value="$PROJECT_DIR$/src/yapl/test/backend/rm/Test_fak.java" />
+        <option value="$PROJECT_DIR$/src/yapl/impl/SyscallCode.java" />
+        <option value="$PROJECT_DIR$/src/yapl/test/backend/rm/Test_Types.java" />
+        <option value="$PROJECT_DIR$/src/yapl/test/backend/rm/Test_Types.true" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-8" />
+    <option name="width" value="976" />
+    <option name="height" value="1038" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="YAUP_Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="YAUP_Compiler" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="YAUP_Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="YAUP_Compiler" type="462c0819:PsiDirectoryNode" />
+              <item name="YAPL" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="YAUP_Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="YAUP_Compiler" type="462c0819:PsiDirectoryNode" />
+              <item name="YAPL" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="YAUP_Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="YAUP_Compiler" type="462c0819:PsiDirectoryNode" />
+              <item name="YAPL" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="YAUP_Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="YAUP_Compiler" type="462c0819:PsiDirectoryNode" />
+              <item name="YAPL" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="CA1" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="YAUP_Compiler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="YAUP_Compiler" type="462c0819:PsiDirectoryNode" />
+              <item name="YAPL" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="CA2" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
+      <pane id="Scope">
+        <subPane subId="Default">
+          <expand>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="YAUP_Compiler" type="cbb8eebc:String" user="YAUP_Compiler" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="YAUP_Compiler" type="cbb8eebc:String" user="YAUP_Compiler" />
+              <item name="src/yapl" type="cbb8eebc:String" user="src/yapl" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="YAUP_Compiler" type="cbb8eebc:String" user="YAUP_Compiler" />
+              <item name="src/yapl" type="cbb8eebc:String" user="src/yapl" />
+              <item name="test/backend/rm" type="cbb8eebc:String" user="test/backend/rm" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="configurable.group.language" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.Test_Types">
+    <configuration name="Test1" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="yapl.test.backend.rm.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="yapl.test.backend.rm.Test1" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="YAUP_Compiler" />
+      <envs />
+    </configuration>
+    <configuration name="Test6" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="yapl.test.backend.rm.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="yapl.test.backend.rm.Test6" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="YAUP_Compiler" />
+      <envs />
+    </configuration>
+    <configuration name="Test_Types" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="backend.rm.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="backend.rm.Test_Types" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="YAUP_Compiler" />
+      <envs />
+    </configuration>
+    <configuration name="Test_fak" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="backend.rm.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="backend.rm.Test_fak" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="YAUP_Compiler" />
+      <envs />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <module />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" value="" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
+      <module name="" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+      <option name="PROGRAM_PARAMETERS" />
+      <predefined_log_file id="idea.log" enabled="true" />
+    </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+    </configuration>
+    <configuration name="run" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" value="" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="YAUP_Compiler" />
+      <envs />
+    </configuration>
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="Application.run" />
+      <item index="1" class="java.lang.String" itemvalue="Application.Test_fak" />
+      <item index="2" class="java.lang.String" itemvalue="Application.Test6" />
+      <item index="3" class="java.lang.String" itemvalue="Application.Test1" />
+      <item index="4" class="java.lang.String" itemvalue="Application.Test_Types" />
+    </list>
+    <recent_temporary>
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Application.Test_Types" />
+        <item index="1" class="java.lang.String" itemvalue="Application.Test1" />
+        <item index="2" class="java.lang.String" itemvalue="Application.Test_fak" />
+        <item index="3" class="java.lang.String" itemvalue="Application.Test6" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SbtLocalSettings">
+    <option name="externalProjectsViewState">
+      <projects_view />
+    </option>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a8353267-ec0f-4bb0-9f3b-db4ab99651a6" name="Default" comment="" />
+      <created>1521239426766</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1521239426766</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
+    <layout>
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3289183" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21192053" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15260416" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3289183" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3296875" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/Segment.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/Registers.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test1.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test4.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/StackPointerRegister.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/SyscallCode.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/BackendMIPS.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/interfaces/BackendAsmRM.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test4.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test3.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test5.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/BackendMIPS.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/interfaces/BackendAsmRM.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test3.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test4.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test5.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test1.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/build.xml" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/BackendMIPS.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/build.xml" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/Procedure.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test3.asm" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test5.asm" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test6.asm" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test6.true" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test1.asm" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test2.txt" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test4.true" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test4.txt" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test1.true" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test1.txt" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test2.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test4.asm" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/interfaces/BackendAsmRM.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test3.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test5.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test6.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test_fak.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test1.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/Register.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/Registers.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/Segment.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/GlobalPointerRegister.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/StackPointerRegister.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test_Error.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test_IfElse.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test4.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test_Types.true" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/test/backend/rm/Test_Types.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/SyscallCode.java" />
+    <entry file="file://$PROJECT_DIR$/src/yapl/impl/BackendMIPS.java" />
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>scala-sdk-2.12.4</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>YAUP_Compiler</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
