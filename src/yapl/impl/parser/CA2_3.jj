@@ -38,18 +38,31 @@ public class CA2_3 {
 
 PARSER_END(CA2_3)
 
-/** Root production. */
+/* TOKEN */
 
-void Start() : { Token t; } {
-    {
-        do {
-            t = getNextToken();
-            System.out.println(t.toString());
-        } while (t.kind != EOF);
-    }
-     <EOF>
+SKIP:
+{
+   " " | "\n" | "\r" | "\t"
 }
 
+MORE :
+{
+  "/*" : IN_COMMENT
+}
+
+<IN_COMMENT>
+SPECIAL_TOKEN :
+{
+  <COMMENT: "*/" > : DEFAULT
+}
+
+<IN_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/* PRODUCTIONS */
 
 void RelOp() :
 {}
@@ -270,47 +283,17 @@ void Program() :
      "Program" <IDENT> ( Decl() | Procedure() )* "Begin" StatementList() "End" <IDENT> "."
 }
 
-SPECIAL_TOKEN:
-{
-    <COMMENT: "/*" ( <LETTER> | <DIGIT> | <OTHERCHAR> | " " | "\n" | "\r" | "\t" )* "*/">
-}
-
 TOKEN:
 {
-    <LETTER: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P"
+    <STRING: "\"" ( " " | <LETTER> | <DIGIT> | <OTHERCHAR> )* "\""> |
+    <IDENT: <LETTER> ( <LETTER> | <DIGIT> )*> |
+    <NUMBER: <DIGIT> ( <DIGIT> )*> |
+    <#LETTER: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P"
     | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f"
     | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v"
-    | "w" | "x" | "y" | "z" | "_">
-}
-
-TOKEN:
-{
-    <DIGIT:  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9">
-}
-
-TOKEN:
-{
+    | "w" | "x" | "y" | "z" | "_"> |
+    <#DIGIT:  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"> |
     <OTHERCHAR: "+" |"-" | "*" | "/" | "." | "," | ";" | ":" | "!" |
-    "?" | "="  | "#" | "%" | "<" | ">" | "$" | "(" | ")"
-    | "[" | "]" | "{" | "}" | "\\" | "@" | "&" | "^" | "|">
-}
-
-TOKEN:
-{
-    <IDENT: <LETTER> ( <LETTER> | <DIGIT> )*>
-}
-
-TOKEN:
-{
-    <NUMBER: <DIGIT> ( <DIGIT> )*>
-}
-
-TOKEN:
-{
-    <STRING: "\"" ( " " | <LETTER> | <DIGIT> | <OTHERCHAR> )* "\"">
-}
-
-SKIP:
-{
-   <WHITESPACE: " " | "\n" | "\r" | "\t">
+        "?" | "="  | "#" | "%" | "<" | ">" | "$" | "(" | ")"
+        | "[" | "]" | "{" | "}" | "\\" | "@" | "&" | "^" | "|">
 }
