@@ -1,5 +1,0 @@
-Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test3.asm line 32 column 2: "lw": Too many or incorrectly formatted operands. Expected: lw $t1,-100($t2)
-Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test3.asm line 45 column 12: "0": operand is of incorrect type
-Error in C:\Uni\10.Semester\compiler\ca_git\YAUP_Compiler\src\yapl\test\backend\rm\Test3.asm line 51 column 12: "0": operand is of incorrect type
-
-Processing terminated due to errors.
