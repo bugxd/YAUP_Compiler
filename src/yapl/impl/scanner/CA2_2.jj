@@ -51,48 +51,39 @@ void Start() : { Token t; } {
 }
 
 
-
-SPECIAL_TOKEN:
-{
-    <COMMENT: "/*" (~[])* "*/">
-}
-
-TOKEN:
-{
-    <LETTER: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P"
-    | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f"
-    | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v"
-    | "w" | "x" | "y" | "z" | "_">
-}
-
-TOKEN:
-{
-    <DIGIT:  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9">
-}
-
-TOKEN:
-{
-    <OTHERCHAR: "+" |"-" | "*" | "/" | "." | "," | ";" | ":" | "!" |
-    "?" | "="  | "#" | "%" | "<" | ">" | "$" | "(" | ")"
-    | "[" | "]" | "{" | "}" | "\\" | "@" | "&" | "^" | "|">
-}
-
-TOKEN:
-{
-    <IDENT: <LETTER> ( <LETTER> | <DIGIT> )*>
-}
-
-TOKEN:
-{
-    <NUMBER: <DIGIT> ( <DIGIT> )*>
-}
-
-TOKEN:
-{
-    <STRING: "\"" ( " " | <LETTER> | <DIGIT> | <OTHERCHAR> )* "\"">
-}
-
 SKIP:
 {
-   <WHITESPACE: " " | "\n" | "\r" | "\t">
+   " " | "\n" | "\r" | "\t"
+}
+
+MORE :
+{
+  "/*" : IN_COMMENT
+}
+
+<IN_COMMENT>
+SPECIAL_TOKEN :
+{
+  <COMMENT: "*/" > : DEFAULT
+}
+
+<IN_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+TOKEN:
+{
+    <STRING: "\"" ( " " | <LETTER> | <DIGIT> | <OTHERCHAR> )* "\""> |
+    <IDENT: <LETTER> ( <LETTER> | <DIGIT> )*> |
+    <NUMBER: <DIGIT> ( <DIGIT> )*> |
+    <#LETTER: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P"
+    | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f"
+    | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v"
+    | "w" | "x" | "y" | "z" | "_"> |
+    <#DIGIT:  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"> |
+    <OTHERCHAR: "+" |"-" | "*" | "/" | "." | "," | ";" | ":" | "!" |
+        "?" | "="  | "#" | "%" | "<" | ">" | "$" | "(" | ")"
+        | "[" | "]" | "{" | "}" | "\\" | "@" | "&" | "^" | "|">
 }
