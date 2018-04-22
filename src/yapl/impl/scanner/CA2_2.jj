@@ -50,9 +50,11 @@ void Start() : { Token t; } {
      <EOF>
 }
 
+
+
 SPECIAL_TOKEN:
 {
-    <COMMENT: "/*" ( <LETTER> | <DIGIT> | <OTHERCHAR> | " " | "\n" | "\r" | "\t" )* "*/">
+    <COMMENT: "/*" (~[])* "*/">
 }
 
 TOKEN:
