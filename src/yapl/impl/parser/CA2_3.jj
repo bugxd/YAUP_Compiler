@@ -1,0 +1,316 @@
+options {
+  LOOKAHEAD = 2;
+  CHOICE_AMBIGUITY_CHECK = 2;
+  OTHER_AMBIGUITY_CHECK = 1;
+  STATIC = true;
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+  ERROR_REPORTING = true;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = false;
+  IGNORE_CASE = false;
+  USER_TOKEN_MANAGER = false;
+  USER_CHAR_STREAM = false;
+  BUILD_PARSER = true;
+  BUILD_TOKEN_MANAGER = true;
+  SANITY_CHECK = true;
+  FORCE_LA_CHECK = false;
+}
+
+PARSER_BEGIN(CA2_3)
+
+/** Simple brace matcher. */
+public class CA2_3 {
+
+  /** Main entry point. */
+  public static void main(String args[]) throws ParseException {
+    try {
+        CA2_3 parser = new CA2_3(new java.io.FileInputStream(args[0]));
+        parser.Program();
+    } catch (java.io.FileNotFoundException e) {
+        System.out.println("JavaCC Parser:  File " + args[0] + " not found.");
+        return;
+    }
+  }
+
+}
+
+PARSER_END(CA2_3)
+
+/** Root production. */
+
+void Start() : { Token t; } {
+    {
+        do {
+            t = getNextToken();
+            System.out.println(t.toString());
+        } while (t.kind != EOF);
+    }
+     <EOF>
+}
+
+
+void RelOp() :
+{}
+{
+"<" | "<=" | ">=" | ">"
+}
+
+void EqualOp() :
+{}
+{
+"==" | "!="
+}
+
+void AddOp() :
+{}
+{
+"+" | "-"
+}
+
+void MulOp() :
+{}
+{
+"*" | "/" | "%"
+}
+
+void Literal() :
+{}
+{
+"True" | "False" | <NUMBER>
+}
+
+void Selector() :
+{}
+{
+( "[" Expr() "]" | "." <IDENT> ) [ Selector() ]
+}
+
+void ArrayLen() :
+{}
+{
+"#" <IDENT> [ Selector() ]
+}
+
+void PrimaryExpr() :
+{}
+{
+Literal() | "(" Expr()")" | ProcedureCall()
+  | <IDENT> [ Selector() ] | ArrayLen()
+}
+
+void UnaryExpr() :
+{}
+{
+[AddOp()] PrimaryExpr()
+}
+
+void MulExpr() :
+{}
+{
+UnaryExpr() ( MulOp() UnaryExpr() )*
+}
+
+void AddExpr() :
+{}
+{
+MulExpr() ( AddOp() MulExpr() )*
+}
+
+void RelExpr() :
+{}
+{
+AddExpr() [ RelOp() AddExpr() ]
+}
+
+void EqualExpr():
+{}
+{
+RelExpr() [ EqualOp() RelExpr() ]
+}
+
+void CondAndExpr() :
+{}
+{
+EqualExpr() ( "And" EqualExpr() )*
+}
+
+void CreationExpr() :
+{}
+{
+"new" NonArrayType() ( "[" Expr() "]" )*
+}
+
+void Expr() :
+{}
+{
+CondAndExpr() ( "Or" CondAndExpr() )* | CreationExpr()
+}
+
+
+void ArgumentList() :
+{}
+{
+Expr() ( "," Expr() )*
+}
+
+void ProcedureCall():
+{}
+{
+<IDENT> "(" [ ArgumentList() ] ")"
+}
+
+void Assignment():
+{}
+{
+<IDENT> [ Selector() ] ":=" Expr()
+}
+
+void IfStatement() :
+{}
+{
+"If" Expr() "Then" StatementList() [ "Else" StatementList() ] "EndIf"
+}
+
+void WhileStatement() :
+{}
+{
+"While" Expr() "Do" StatementList() "EndWhile"
+}
+
+void ReturnStatement() :
+{}
+{
+"Return" [ Expr() ]
+}
+
+void WriteStatement() :
+{}
+{
+"Write" <STRING>
+}
+
+void Statement() :
+{}
+{
+IfStatement() | WhileStatement() | ReturnStatement()
+  | WriteStatement() | Assignment() | ProcedureCall() | Block()
+}
+
+void StatementList() :
+{}
+{
+( Statement() ";" )*
+}
+
+void Block():
+{}
+{
+[ Decl() ] "Begin" StatementList() "End"
+}
+
+void NonArrayType() :
+{}
+{
+"int" | "bool" | <IDENT>
+}
+
+void Type() :
+{}
+{
+NonArrayType() ( "[" "]" )*
+}
+
+void ReturnType() :
+{}
+{
+"void" | Type()
+}
+void ConstDecl() :
+{}
+{
+  "Const" <IDENT> "=" Literal() ";"
+}
+
+void VarDecl() :
+{}
+{
+   Type() <IDENT> ( "," <IDENT> )* ";"
+}
+
+void TypeDecl() :
+{}
+{
+ "Record" <IDENT> VarDecl() ( VarDecl() )* "EndRecord" ";"
+}
+void Decl() :
+{}
+{
+     "Declare" ( ConstDecl() | VarDecl() | TypeDecl() )*
+}
+void FormalParam() :
+{}
+{
+     Type() <IDENT>
+}
+void FormalParamList() :
+{}
+{
+     FormalParam() ( "," FormalParam() )*
+}
+void Procedure() :
+{}
+{
+     "Procedure" ReturnType() <IDENT> "(" [ FormalParamList() ] ")" Block() <IDENT> ";"
+}
+void Program() :
+{}
+{
+     "Program" <IDENT> ( Decl() | Procedure() )* "Begin" StatementList() "End" <IDENT> "."
+}
+
+SPECIAL_TOKEN:
+{
+    <COMMENT: "/*" ( <LETTER> | <DIGIT> | <OTHERCHAR> | " " | "\n" | "\r" | "\t" )* "*/">
+}
+
+TOKEN:
+{
+    <LETTER: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P"
+    | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f"
+    | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v"
+    | "w" | "x" | "y" | "z" | "_">
+}
+
+TOKEN:
+{
+    <DIGIT:  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9">
+}
+
+TOKEN:
+{
+    <OTHERCHAR: "+" |"-" | "*" | "/" | "." | "," | ";" | ":" | "!" |
+    "?" | "="  | "#" | "%" | "<" | ">" | "$" | "(" | ")"
+    | "[" | "]" | "{" | "}" | "\\" | "@" | "&" | "^" | "|">
+}
+
+TOKEN:
+{
+    <IDENT: <LETTER> ( <LETTER> | <DIGIT> )*>
+}
+
+TOKEN:
+{
+    <NUMBER: <DIGIT> ( <DIGIT> )*>
+}
+
+TOKEN:
+{
+    <STRING: "\"" ( " " | <LETTER> | <DIGIT> | <OTHERCHAR> )* "\"">
+}
+
+SKIP:
+{
+   <WHITESPACE: " " | "\n" | "\r" | "\t">
+}

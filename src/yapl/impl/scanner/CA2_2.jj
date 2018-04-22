@@ -1,0 +1,96 @@
+options {
+  LOOKAHEAD = 2;
+  CHOICE_AMBIGUITY_CHECK = 2;
+  OTHER_AMBIGUITY_CHECK = 1;
+  STATIC = true;
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+  ERROR_REPORTING = true;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = false;
+  IGNORE_CASE = false;
+  USER_TOKEN_MANAGER = false;
+  USER_CHAR_STREAM = false;
+  BUILD_PARSER = true;
+  BUILD_TOKEN_MANAGER = true;
+  SANITY_CHECK = true;
+  FORCE_LA_CHECK = false;
+}
+
+PARSER_BEGIN(CA2_2)
+
+/** Simple brace matcher. */
+public class CA2_2 {
+
+  /** Main entry point. */
+  public static void main(String args[]) throws ParseException {
+    try {
+        CA2_2 parser = new CA2_2(new java.io.FileInputStream(args[0]));
+        parser.Start();
+    } catch (java.io.FileNotFoundException e) {
+        System.out.println("JavaCC Parser:  File " + args[0] + " not found.");
+        return;
+    }
+  }
+
+}
+
+PARSER_END(CA2_2)
+
+/** Root production. */
+
+void Start() : { Token t; } {
+    {
+        do {
+            t = getNextToken();
+            System.out.println(t.toString());
+        } while (t.kind != EOF);
+    }
+     <EOF>
+}
+
+SPECIAL_TOKEN:
+{
+    <COMMENT: "/*" ( <LETTER> | <DIGIT> | <OTHERCHAR> | " " | "\n" | "\r" | "\t" )* "*/">
+}
+
+TOKEN:
+{
+    <LETTER: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P"
+    | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f"
+    | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v"
+    | "w" | "x" | "y" | "z" | "_">
+}
+
+TOKEN:
+{
+    <DIGIT:  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9">
+}
+
+TOKEN:
+{
+    <OTHERCHAR: "+" |"-" | "*" | "/" | "." | "," | ";" | ":" | "!" |
+    "?" | "="  | "#" | "%" | "<" | ">" | "$" | "(" | ")"
+    | "[" | "]" | "{" | "}" | "\\" | "@" | "&" | "^" | "|">
+}
+
+TOKEN:
+{
+    <IDENT: <LETTER> ( <LETTER> | <DIGIT> )*>
+}
+
+TOKEN:
+{
+    <NUMBER: <DIGIT> ( <DIGIT> )*>
+}
+
+TOKEN:
+{
+    <STRING: "\"" ( " " | <LETTER> | <DIGIT> | <OTHERCHAR> )* "\"">
+}
+
+SKIP:
+{
+   <WHITESPACE: " " | "\n" | "\r" | "\t">
+}
