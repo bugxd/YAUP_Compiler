@@ -1,4 +1,4 @@
-<project name="examples" default="eg1" basedir=".">
+<project name="examples" default="eg1" basedir="">
 
   <property name="javacc.home" value="/usr/local/javacc/"/>
 

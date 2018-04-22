@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='ISO-8859-1' ?>
 
-<project name="Java 1.5 Parser" default="compile-and-test" basedir=".">
+<project name="Java 1.5 Parser" default="compile-and-test" basedir="">
   <property name="version"
             value="1.0">
   </property>
   <property name="javacc.root"
-            value="../../../">
+            value="../../..//">
   </property>
   <property name="debug_parser"
             value="false">
@@ -32,13 +32,13 @@
 
   <target name="compile" depends="generated-files">
     <javac srcdir="."
-           destdir="." >
+           destdir="" >
     </javac>
   </target>
 
   <target name="clean">
     <delete>
-      <fileset dir=".">
+      <fileset dir="">
          <include name="JavaParser.java"/>
          <include name="JavaParserTokenManager.java"/>
          <include name="JavaParserConstants.java"/>
@@ -54,7 +54,7 @@
   <target name="parser-files-init">
         <uptodate property="parser.gen"
                   targetfile="Java1.5.jj">
-            <srcfiles dir="." includes="JavaParser.java"/>
+            <srcfiles dir="" includes="JavaParser.java"/>
         </uptodate>
   </target>
 
