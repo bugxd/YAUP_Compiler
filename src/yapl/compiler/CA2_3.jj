@@ -19,6 +19,9 @@ options {
 }
 
 PARSER_BEGIN(CA2_3)
+package yapl.compiler;
+
+import yapl.lib.CompilerMessage;
 
 /** Simple brace matcher. */
 public class CA2_3 {
@@ -31,6 +34,10 @@ public class CA2_3 {
     } catch (java.io.FileNotFoundException e) {
         System.out.println("JavaCC Parser:  File " + args[0] + " not found.");
         return;
+    } catch (ParseException exception) {
+        CompilerMessage.printError(exception, "how-do-i-get-program-name?");
+    } catch (TokenMgrError error) {
+        CompilerMessage.printError(error, "how-do-i-get-program-name?");
     }
   }
 
