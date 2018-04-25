@@ -1,4 +1,4 @@
-<project name="The YAPL Compiler" default="compile-java" basedir="./">
+<project name="The YAPL Compiler" default="eval-all" basedir="./">
 	<description>
 ANT build file for the YAPL compiler.
 
@@ -49,7 +49,7 @@ User-relevant properties: (customize to your environment)
         <mkdir dir="${build}" />
     </target>
 
-    <target name="compile-ant-task">
+    <target name="compile-ant-task" depends="mkdirs">
 		<javac srcdir="${src}" destdir="${build}" includeantruntime="true">
 			<include name="yapl/ant/*.java"/>
 		</javac>
@@ -72,7 +72,7 @@ User-relevant properties: (customize to your environment)
     </target>
 
 	<target name="run" depends="compile-java" description="TODO: run the YAPL compiler, writing compiler messages to ${log}">
-        <java classname="${parserclass}">
+        <java classname="${parserclass}" output="${log}">
             <classpath>
                 <pathelement location="${build}"/>
                 <pathelement path="${java.class.path}"/>
@@ -90,35 +90,6 @@ User-relevant properties: (customize to your environment)
             </condition>
         </fail>
     </target>
-
-    <!-- PARSER TARGETS -->
-
-    <target name="eval-all-parser" description="evaluate all test cases of a parser">
-        <var name="npassed" value="0"/>
-        <var name="ntotal" value="0"/>
-        <for param="testname" list="${parser-test-files}">
-            <sequential>
-                <trycatch>
-                    <try>
-                        <antcall target="eval-compiler-msg">
-                            <param name="yapl" value="${parser-test-dir}/@{testname}.yapl"/>
-                            <param name="log" value="${parser-test-dir}/@{testname}.log"/>
-                            <param name="execlog" value="${parser-test-dir}/@{testname}.execlog"/>
-                        </antcall>
-                        <echo>@{yapl}: PASSED</echo>
-                        <math result="npassed" operand1="${npassed}" operation="+" operand2="1" datatype="int"/>
-                    </try>
-                    <catch>
-                        <echo>@{yapl}: FAILED</echo>
-                    </catch>
-                </trycatch>
-                <math result="ntotal" operand1="${ntotal}" operation="+" operand2="1" datatype="int"/>
-            </sequential>
-        </for>
-        <echo>Tests passed: ${npassed}/${ntotal}</echo>
-    </target>
-
-    <!-- END PARSER TARGETS -->
 
     <target name="eval-all" description="evaluate all test cases of a given compiler 'version'">
         <var name="npassed" value="0"/>
