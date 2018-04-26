@@ -22,42 +22,15 @@ PARSER_BEGIN(CA2_3)
 package yapl.compiler;
 
 import yapl.lib.CompilerMessage;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /** Simple brace matcher. */
 public class CA2_3 {
 
-  private static String getProgramName (String fileName) {
-    Pattern programPattern = Pattern.compile("^Program (\\w+)");
-
-    BufferedReader reader = null;
-    try {
-        reader = new BufferedReader(new FileReader(fileName));
-        String line = reader.readLine();
-
-        while (line != null) {
-            Matcher m = programPattern.matcher(line);
-            if (m.find()) {
-                reader.close();
-                return m.group(1);
-            }
-            line = reader.readLine();
-        }
-        return "Program Name not found!";
-    } catch (Exception ex) {
-        return "Program Name not found!";
-    }
-  }
+  private static String programName = "unknownProgramName";
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException {
 
-    String programName = CA2_3.getProgramName(args[0]);
     try {
         CA2_3 parser = new CA2_3(new java.io.FileInputStream(args[0]));
         parser.Program();
@@ -316,9 +289,16 @@ void Procedure() :
      "Procedure" ReturnType() <IDENT> "(" [ FormalParamList() ] ")" Block() <IDENT> ";"
 }
 void Program() :
-{}
+{ Token programNameToken;}
 {
-     "Program" <IDENT> ( Decl() | Procedure() )* "Begin" StatementList() "End" <IDENT> "."
+
+     "Program"
+     programNameToken=<IDENT>
+     {
+        CA2_3.programName=programNameToken.image;
+     }
+
+     ( Decl() | Procedure() )* "Begin" StatementList() "End" <IDENT> "."
 }
 
 

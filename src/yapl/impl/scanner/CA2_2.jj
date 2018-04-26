@@ -20,6 +20,8 @@ options {
 
 PARSER_BEGIN(CA2_2)
 
+package yapl.impl.scanner;
+
 /** Simple brace matcher. */
 public class CA2_2 {
 
