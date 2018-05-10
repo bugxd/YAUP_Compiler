@@ -22,9 +22,17 @@ PARSER_BEGIN(CA2_3)
 package yapl.compiler;
 
 import yapl.lib.CompilerMessage;
+import yapl.impl.symboltable.SymbolTableImpl;
+import yapl.interfaces.Symboltable;
+import yapl.interfaces.SymbolKind;
+import yapl.interfaces.Symbol;
+import yapl.impl.symboltable.SymbolImpl;
+import yapl.interfaces.CompilerError;
 
 /** Simple brace matcher. */
 public class CA2_3 {
+
+  private static Symboltable symbolTable = new SymbolTableImpl();
 
   private static String programName = "unknownProgramName";
 
@@ -42,6 +50,8 @@ public class CA2_3 {
         CompilerMessage.printError(exception, programName);
     } catch (TokenMgrError error) {
         CompilerMessage.printError(error, programName);
+    } catch (YAPLException exception) {
+        CompilerMessage.printError(exception, programName);
     }
   }
 
@@ -105,105 +115,150 @@ void Literal() :
 "True" | "False" | <NUMBER>
 }
 
-void Selector() :
+void Selector() throws YAPLException :
 {}
 {
 ( "[" Expr() "]" | "." <IDENT> ) [ Selector() ]
 }
 
-void ArrayLen() :
-{}
+void ArrayLen() throws YAPLException:
+{ Token arrayToken;}
 {
-"#" <IDENT> [ Selector() ]
+    "#"
+    arrayToken=<IDENT> {
+     Symbol arraySymbol = symbolTable.lookup(arrayToken.image);
+         if (arraySymbol == null) {
+             throw new YAPLException(CompilerError.IdentNotDecl, arrayToken, null);
+         }
+         if (!arraySymbol.getKind().equals(SymbolKind.PARAMETER) &&
+             !arraySymbol.getKind().equals(SymbolKind.VARIABLE)) {
+             throw new YAPLException(CompilerError.SymbolIllegalUse, arrayToken, arraySymbol);
+         }
+    }
+     [ Selector() ]
 }
 
-void PrimaryExpr() :
-{}
+void PrimaryExpr() throws YAPLException :
+{ Token exprToken;}
 {
 Literal() | "(" Expr()")" | ProcedureCall()
-  | <IDENT> [ Selector() ] | ArrayLen()
+  |
+  exprToken=<IDENT>{
+    Symbol exprSymbol = symbolTable.lookup(exprToken.image);
+    if (exprSymbol == null) {
+        throw new YAPLException(CompilerError.IdentNotDecl, exprToken, null);
+    }
+    if (!exprSymbol.getKind().equals(SymbolKind.PARAMETER) &&
+        !exprSymbol.getKind().equals(SymbolKind.VARIABLE) &&
+        !exprSymbol.getKind().equals(SymbolKind.CONSTANT)) {
+        throw new YAPLException(CompilerError.SymbolIllegalUse, exprToken, exprSymbol);
+    }
+  }
+  [ Selector() ] | ArrayLen()
 }
 
-void UnaryExpr() :
+void UnaryExpr() throws YAPLException :
 {}
 {
 [AddOp()] PrimaryExpr()
 }
 
-void MulExpr() :
+void MulExpr() throws YAPLException :
 {}
 {
 UnaryExpr() ( MulOp() UnaryExpr() )*
 }
 
-void AddExpr() :
+void AddExpr() throws YAPLException :
 {}
 {
 MulExpr() ( AddOp() MulExpr() )*
 }
 
-void RelExpr() :
+void RelExpr() throws YAPLException :
 {}
 {
 AddExpr() [ RelOp() AddExpr() ]
 }
 
-void EqualExpr():
+void EqualExpr() throws YAPLException :
 {}
 {
 RelExpr() [ EqualOp() RelExpr() ]
 }
 
-void CondAndExpr() :
+void CondAndExpr() throws YAPLException :
 {}
 {
 EqualExpr() ( "And" EqualExpr() )*
 }
 
-void CreationExpr() :
+void CreationExpr() throws YAPLException :
 {}
 {
 "new" NonArrayType() ( "[" Expr() "]" )*
 }
 
-void Expr() :
+void Expr() throws YAPLException :
 {}
 {
 CondAndExpr() ( "Or" CondAndExpr() )* | CreationExpr()
 }
 
 
-void ArgumentList() :
+void ArgumentList() throws YAPLException :
 {}
 {
 Expr() ( "," Expr() )*
 }
 
-void ProcedureCall():
-{}
+void ProcedureCall() throws YAPLException :
+{ Token procedureToken; }
 {
-<IDENT> "(" [ ArgumentList() ] ")"
+    procedureToken=<IDENT>{
+        Symbol symbol = symbolTable.lookup(procedureToken.image);
+        if (symbol == null) {
+            throw new YAPLException(CompilerError.IdentNotDecl, procedureToken, null);
+        }
+
+        if (!symbol.getKind().equals(SymbolKind.PROCEDURE)) {
+            throw new YAPLException(CompilerError.SymbolIllegalUse, procedureToken, symbol);
+        }
+
+    }
+     "(" [ ArgumentList() ] ")"
+
 }
 
-void Assignment():
-{}
+void Assignment() throws YAPLException:
+{ Token lvalueToken; }
 {
-<IDENT> [ Selector() ] ":=" Expr()
+    lvalueToken=<IDENT>{
+        Symbol lvalueSymbol = symbolTable.lookup(lvalueToken.image);
+        if (lvalueSymbol == null) {
+            throw new YAPLException(CompilerError.IdentNotDecl, lvalueToken, lvalueSymbol);
+        }
+
+        if (!lvalueSymbol.getKind().equals(SymbolKind.VARIABLE) &&
+            !lvalueSymbol.getKind().equals(SymbolKind.PARAMETER)) {
+            throw new YAPLException(CompilerError.SymbolIllegalUse, lvalueToken, lvalueSymbol);
+        }
+    }[ Selector() ] ":=" Expr()
 }
 
-void IfStatement() :
+void IfStatement() throws YAPLException :
 {}
 {
 "If" Expr() "Then" StatementList() [ "Else" StatementList() ] "EndIf"
 }
 
-void WhileStatement() :
+void WhileStatement() throws YAPLException :
 {}
 {
 "While" Expr() "Do" StatementList() "EndWhile"
 }
 
-void ReturnStatement() :
+void ReturnStatement() throws YAPLException :
 {}
 {
 "Return" [ Expr() ]
@@ -215,90 +270,210 @@ void WriteStatement() :
 "Write" <STRING>
 }
 
-void Statement() :
+void Statement() throws YAPLException :
 {}
 {
 IfStatement() | WhileStatement() | ReturnStatement()
   | WriteStatement() | Assignment() | ProcedureCall() | Block()
 }
 
-void StatementList() :
+void StatementList() throws YAPLException :
 {}
 {
 ( Statement() ";" )*
 }
 
-void Block():
+void Block() throws YAPLException :
 {}
 {
-[ Decl() ] "Begin" StatementList() "End"
+    {
+        symbolTable.openScope(false);
+    }
+    [ Decl() ] "Begin" StatementList() "End"
+    {
+        symbolTable.closeScope();
+    }
 }
 
-void NonArrayType() :
-{}
+void NonArrayType() throws YAPLException :
+{ Token typeToken;}
 {
-"int" | "bool" | <IDENT>
+"int" | "bool" |
+
+    typeToken=<IDENT>{
+        Symbol symbol = symbolTable.lookup(typeToken.image);
+        if (symbol == null) {
+            throw new YAPLException(CompilerError.IdentNotDecl, typeToken, symbol);
+        }
+        if (!symbol.getKind().equals(SymbolKind.TYPENAME)) {
+            throw new YAPLException(CompilerError.SymbolIllegalUse, typeToken, symbol);
+        }
+    }
 }
 
-void Type() :
+void Type() throws YAPLException :
 {}
 {
 NonArrayType() ( "[" "]" )*
 }
 
-void ReturnType() :
+void ReturnType() throws YAPLException :
 {}
 {
 "void" | Type()
 }
-void ConstDecl() :
-{}
+void ConstDecl() throws YAPLException :
+{ Token constToken; }
 {
-  "Const" <IDENT> "=" Literal() ";"
+  "Const"
+  constToken=<IDENT>
+  {
+    Symbol symbol = symbolTable.lookup(constToken.image);
+    if (symbolTable.containsIdentifierInCurrentScope(constToken.image)) {
+        throw new YAPLException(CompilerError.SymbolExists, constToken, symbol);
+    }
+    Symbol constSymbol = new SymbolImpl(SymbolKind.CONSTANT, constToken.image);
+    constSymbol.setReadonly(true);
+    constSymbol.setReference(false);
+    symbolTable.addSymbol(constSymbol);
+  }
+   "=" Literal() ";"
 }
 
-void VarDecl() :
-{}
+void VarDecl(SymbolKind kind) throws YAPLException :
+{ Token varToken;}
 {
-   Type() <IDENT> ( "," <IDENT> )* ";"
+   Type()
+   varToken=<IDENT>{
+     Symbol symbol = symbolTable.lookup(varToken.image);
+     if (symbolTable.containsIdentifierInCurrentScope(varToken.image)) {
+        throw new YAPLException(CompilerError.SymbolExists, varToken, symbol);
+     }
+     Symbol varSymbol = new SymbolImpl(kind, varToken.image);
+     varSymbol.setReadonly(false);
+     varSymbol.setReference(false);
+     symbolTable.addSymbol(varSymbol);
+   }
+   ( "," varToken=<IDENT>{
+            symbol = symbolTable.lookup(varToken.image);
+             if (symbolTable.containsIdentifierInCurrentScope(varToken.image)) {
+                throw new YAPLException(CompilerError.SymbolExists, varToken, symbol);
+             }
+            varSymbol = new SymbolImpl(kind, varToken.image);
+            varSymbol.setReadonly(false);
+            varSymbol.setReference(false);
+            symbolTable.addSymbol(varSymbol);
+        }
+    )* ";"
 }
 
-void TypeDecl() :
+void TypeDecl() throws YAPLException :
+{ Token recordToken; }
+{
+ "Record"
+ recordToken=<IDENT>{
+    Symbol symbol = symbolTable.lookup(recordToken.image);
+     if (symbolTable.containsIdentifierInCurrentScope(recordToken.image)) {
+        throw new YAPLException(CompilerError.SymbolExists, recordToken, symbol);
+     }
+    Symbol recordSymbol = new SymbolImpl(SymbolKind.TYPENAME, recordToken.image);
+    recordSymbol.setReadonly(false);
+    recordSymbol.setReference(false);
+    symbolTable.addSymbol(recordSymbol);
+    symbolTable.openScope(false);
+  }
+
+  VarDecl(SymbolKind.FIELD) ( VarDecl(SymbolKind.FIELD) )*
+  "EndRecord"{
+     symbolTable.closeScope();
+   }
+   ";"
+}
+void Decl() throws YAPLException :
 {}
 {
- "Record" <IDENT> VarDecl() ( VarDecl() )* "EndRecord" ";"
+     "Declare" ( ConstDecl() | VarDecl(SymbolKind.VARIABLE) | TypeDecl() )*
 }
-void Decl() :
-{}
+void FormalParam() throws YAPLException :
 {
-     "Declare" ( ConstDecl() | VarDecl() | TypeDecl() )*
+    Token identToken;
 }
-void FormalParam() :
-{}
 {
-     Type() <IDENT>
+     Type()
+     identToken=<IDENT> {
+        Symbol symbol = symbolTable.lookup(identToken.image);
+         if (symbolTable.containsIdentifierInCurrentScope(identToken.image)) {
+             throw new YAPLException(CompilerError.SymbolExists, identToken, symbol);
+         }
+
+         symbol = new SymbolImpl(SymbolKind.PARAMETER, identToken.image);
+         symbolTable.addSymbol(symbol);
+     }
 }
-void FormalParamList() :
+void FormalParamList() throws YAPLException :
 {}
 {
      FormalParam() ( "," FormalParam() )*
 }
-void Procedure() :
-{}
+void Procedure() throws YAPLException :
 {
-     "Procedure" ReturnType() <IDENT> "(" [ FormalParamList() ] ")" Block() <IDENT> ";"
+    Token procedureNameStartToken;
+    Token procedureNameEndToken;
+    Symbol procedureStartSymbol;
 }
-void Program() :
-{ Token programNameToken;}
+{
+     "Procedure"
+     ReturnType()
+     procedureNameStartToken=<IDENT>{
+         Symbol symbol = symbolTable.lookup(procedureNameStartToken.image);
+         if (symbolTable.containsIdentifierInCurrentScope(procedureNameStartToken.image)) {
+             throw new YAPLException(CompilerError.SymbolExists, procedureNameStartToken, symbol);
+         }
+
+         procedureStartSymbol = new SymbolImpl(SymbolKind.PROCEDURE, procedureNameStartToken.image);
+         symbolTable.addSymbol(procedureStartSymbol);
+         symbolTable.openScope(true);
+
+     }
+     "(" [ FormalParamList() ] ")" Block()
+
+     procedureNameEndToken=<IDENT>{
+
+        if (procedureNameEndToken.image.compareTo(procedureNameStartToken.image) != 0) {
+            throw new YAPLException(CompilerError.EndIdentMismatch, procedureNameEndToken, procedureStartSymbol);
+        }
+
+        symbolTable.closeScope();
+     }";"
+}
+void Program() throws YAPLException :
+{
+    Token programNameStartToken;
+    Token programNameEndToken;
+    Symbol programNameStartSymbol;
+}
 {
 
      "Program"
-     programNameToken=<IDENT>
+     programNameStartToken=<IDENT>
      {
-        CA2_3.programName=programNameToken.image;
+        CA2_3.programName=programNameStartToken.image;
+        symbolTable.openScope(true);
+        programNameStartSymbol = new SymbolImpl(SymbolKind.PROGRAM, programNameStartToken.image);
+        symbolTable.addSymbol(programNameStartSymbol);
+        symbolTable.openScope(true);
      }
 
-     ( Decl() | Procedure() )* "Begin" StatementList() "End" <IDENT> "."
+     ( Decl() | Procedure() )* "Begin" StatementList() "End"
+
+     programNameEndToken=<IDENT> {
+        if (programNameEndToken.image.compareTo(programNameStartToken.image) != 0) {
+            throw new YAPLException(CompilerError.EndIdentMismatch, programNameEndToken, programNameStartSymbol);
+        }
+
+        symbolTable.closeScope();
+        symbolTable.closeScope();
+     }"."
 }
 
 

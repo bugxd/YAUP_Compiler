@@ -19,7 +19,7 @@
   <property name="javacc" location="resources/javacc-6.0"/>
   <property name="ant-contrib" location="resources/ant-contrib.jar"/>
   <property name="mars-jar" location="resources/mars.jar"/>
-  <property name="version" value="parser"/>
+  <property name="version" value="symbolcheck"/>
   <property name="yapl" location="testfiles/${version}/test01.yapl"/>
   <property name="outfile" value="${yapl}.asm"/>
   <property name="log" value="${yapl}.log"/>

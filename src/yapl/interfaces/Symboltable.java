@@ -1,6 +1,6 @@
 package yapl.interfaces;
 
-import yapl.lib.YAPLException;
+import yapl.compiler.YAPLException;
 
 /**
  * Interface to the symbol table of the YAPL compiler.
@@ -87,8 +87,10 @@ public interface Symboltable {
 	 *            {@link Symbol} interface.
 	 * @return <code>null</code> if no appropriate symbol can be found.
 	 */
-	public Symbol getNearestParentSymbol(int kind);
+	public Symbol getNearestParentSymbol(SymbolKind kind);
 
 	/** Enable/disable debugging output for symbol table operations. */
 	public void setDebug(boolean on);
+
+	public boolean containsIdentifierInCurrentScope(String ident);
 }
