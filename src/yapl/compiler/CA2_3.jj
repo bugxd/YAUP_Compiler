@@ -21,18 +21,22 @@ options {
 PARSER_BEGIN(CA2_3)
 package yapl.compiler;
 
-import yapl.lib.CompilerMessage;
 import yapl.impl.symboltable.SymbolTableImpl;
-import yapl.interfaces.Symboltable;
-import yapl.interfaces.SymbolKind;
-import yapl.interfaces.Symbol;
 import yapl.impl.symboltable.SymbolImpl;
-import yapl.interfaces.CompilerError;
+
+import yapl.impl.typecheck.AttribImpl;
+import yapl.impl.codegen.CodeGenImpl;
+import yapl.interfaces.*;
+import yapl.lib.*;
+import java.util.List;
+import java.util.ArrayList;
+
 
 /** Simple brace matcher. */
 public class CA2_3 {
 
   private static Symboltable symbolTable = new SymbolTableImpl();
+  private static CodeGen codegen = new CodeGenImpl();
 
   private static String programName = "unknownProgramName";
 
@@ -55,6 +59,16 @@ public class CA2_3 {
     }
   }
 
+    /** Output function for additional information */
+    private static void info(String s) {
+      //if(displayInfo)
+		System.out.println("> Compiler: " + s);
+    }
+
+    /** Output function for additional information */
+    private static void info(String s, Token t) {
+		info(s + " '"+t.image+"'");
+    }
 }
 
 PARSER_END(CA2_3)
@@ -66,175 +80,452 @@ SKIP:
    " " | "\n" | "\r" | "\t"
 }
 
-MORE :
-{
-  "/*" : IN_COMMENT
-}
-
-<IN_COMMENT>
-SPECIAL_TOKEN :
-{
-  <COMMENT: "*/" > : DEFAULT
-}
-
-<IN_COMMENT>
-MORE :
-{
-  < ~[] >
-}
 
 /* PRODUCTIONS */
 
-void RelOp() :
-{}
+/* RelOp = "<" | "<=" | ">=" | ">" . */
+Token RelOp() throws YAPLException:
 {
-"<" | "<=" | ">=" | ">"
+    {info("Found: RelOp");}
+    Token tok;
+}
+{
+	(
+	  tok = <LESS>			{info("Found: <LESS>");}
+	  | tok = <LESS_EQUAL>		{info("Found: <LESS_EQUAL>");}
+	  | tok = <GREATER_EQUAL>	{info("Found: <GREATER_EQUAL>");}
+	  | tok = <GREATER>	{info("Found: <GREATER>");}
+	)
+	{ return tok; }
 }
 
-void EqualOp() :
-{}
+/* EqualOp = "==" | "!=" . */
+Token EqualOp() throws YAPLException:
 {
-"==" | "!="
+    {info("Found: EqualOp");}
+    Token tok;
+}
+{
+	(
+	  tok = <EQUAL>			{info("Found: <EQUAL>");}
+	  | tok = <NOT_EQUAL>		{info("Found: <NOT_EQUAL>");}
+	)
+	{ return tok; }
 }
 
-void AddOp() :
-{}
+/* AddOp = "+" | "-" . */
+Token AddOp() throws YAPLException :
 {
-"+" | "-"
+    {info("Found: AddOp");}
+	Token tok;
+}
+{
+	(
+	  tok = <PLUS>			{info("Found: <PLUS>");}
+	  | tok = <MINUS>		{info("Found: <MINUS>");}
+	)
+	{ return tok; }
 }
 
-void MulOp() :
-{}
+/* MulOp = "*" . */
+Token MulOp() throws YAPLException :
 {
-"*" | "/" | "%"
+    {info("Found: MulOp");}
+	Token tok;
+}
+{
+	(
+	  tok = <MULT> 			{info("Found: <MULT>");}
+	  | tok = <DIV>		{info("Found: <DIV>");}
+	  | tok = <MODULO>		{info("Found: <MODULO>");}
+	)
+	{ return tok; }
 }
 
-void Literal() :
-{}
+/* Literal = "True" | "False" | number . */
+Attrib Literal() throws YAPLException :
 {
-"True" | "False" | <NUMBER>
+	{info("Found: Literal");}
+	Token tok;
+}
+{
+
+	tok = <TRUE>				{info("Found: <TRUE>");}
+	{ return new AttribImpl(Attrib.Constant, new BoolType(true), token); }
+
+	| tok = <FALSE>			{info("Found: <FALSE>");}
+	{ return new AttribImpl(Attrib.Constant, new BoolType(false), token); }
+
+	| tok = <NUMBER>	{info("Found: <NUMBER>", tok);}
+	{ return new AttribImpl(
+	  	Attrib.Constant,new IntType(Integer.parseInt(tok.image)), token); }
+
 }
 
-void Selector() throws YAPLException :
-{}
+/***************************************************EVERYTHING FINE TILL HERE ************************************************/
+/*****************************************************************************************************************************/
+/*****************************************************************************************************************************/
+
+Attrib Selector(Attrib arrayOrRecord) throws YAPLException :
 {
-( "[" Expr() "]" | "." <IDENT> ) [ Selector() ]
+    {info("Found: Selector");}
+    Token tok;
+    Attrib index;
+    Type typeAfterSelection;
+    Attrib nextArrayOrRecord = null;
+}
+{
+    (
+        (
+            tok = <BRACKET_LEFT>  {info("Found: "+"<BRACKET_LEFT>");}
+            index = Expr()
+            <BRACKET_RIGHT> {info("Found: <BRACKET_RIGHT>");}
+            {
+                if (!(index.getType() instanceof IntType)) {
+                    throw new YAPLException(CompilerError.BadArraySelector, tok, null);
+                }
+                if (!(arrayOrRecord.getType() instanceof ArrayType)) {
+                    throw new YAPLException(CompilerError.SelectorNotArray, tok, null);
+                }
+                ArrayType arrayType = (ArrayType) arrayOrRecord.getType();
+                typeAfterSelection = arrayType.subarray();
+                nextArrayOrRecord = new AttribImpl(Attrib.Constant, typeAfterSelection, index.getToken());
+            }
+        )
+        | <DOT> tok = <IDENT>           // TODO: CHECK THIS
+        {
+            if (!(arrayOrRecord.getType() instanceof RecordType)) {
+                throw new YAPLException(CompilerError.SelectorNotRecord, tok, null);
+            }
+            RecordType recordType = (RecordType) arrayOrRecord.getType();
+            Symbol sym = recordType.getFieldByName(tok.image);
+            if (sym == null) {
+                throw new YAPLException(CompilerError.InvalidRecordField, tok, sym);
+            }
+            typeAfterSelection = sym.getType();
+        }
+
+        {
+            nextArrayOrRecord = new AttribImpl(Attrib.Constant, typeAfterSelection, tok);
+        }
+    ) [ nextArrayOrRecord = Selector(nextArrayOrRecord) ]        // TODO: CHECK THIS
+
+    {
+        return nextArrayOrRecord;
+    }
 }
 
-void ArrayLen() throws YAPLException:
-{ Token arrayToken;}
+Attrib ArrayLen() throws YAPLException:
 {
-    "#"
-    arrayToken=<IDENT> {
-     Symbol arraySymbol = symbolTable.lookup(arrayToken.image);
-         if (arraySymbol == null) {
-             throw new YAPLException(CompilerError.IdentNotDecl, arrayToken, null);
+    {info("Found: ArrayLen");}
+    Token arrayToken;
+    Symbol arraySymbol;
+    Attrib attrib;
+
+}
+{
+    <SHARP>                 {info("Found: <SHARP>");}
+    arrayToken=<IDENT>      {info("Found: <IDENT>", arrayToken);}
+    {
+        arraySymbol = symbolTable.lookup(arrayToken.image);
+        if (arraySymbol == null) {
+            throw new YAPLException(CompilerError.IdentNotDecl, arrayToken, null);
+        }
+        if (!arraySymbol.getKind().equals(SymbolKind.PARAMETER) &&
+            !arraySymbol.getKind().equals(SymbolKind.VARIABLE)) {
+            throw new YAPLException(CompilerError.SymbolIllegalUse, arrayToken, arraySymbol);
+        }
+
+        attrib = new AttribImpl(Attrib.Constant, arraySymbol.getType(), arrayToken);
+    }
+     [ attrib = Selector(attrib) ] //TODO: CHECK THIS!
+    {
+        return codegen.arrayLength(attrib);
+    }
+}
+
+
+/*********** EXPRESSIONS ************************/
+
+Attrib PrimaryExpr() throws YAPLException :
+{
+    {info("Found: PrimaryExpr");}
+    Token exprToken;
+    Symbol exprSymbol;
+    Attrib attr = null;
+}
+{
+    (
+        attr = Literal()
+
+        | <PAR_LEFT>        {info("Found: <PAR_LEFT>");}
+        attr = Expr()
+        <PAR_RIGHT>         {info("Found: <PAR_RIGHT>");}
+
+        | attr = ProcedureCall()   // TODO: IMPLEMENT THIS
+
+        | exprToken=<IDENT>     {info("Found: <IDENT>", exprToken);}
+        {
+            exprSymbol = symbolTable.lookup(exprToken.image);
+            if (exprSymbol == null) {
+                throw new YAPLException(CompilerError.IdentNotDecl, exprToken, null);
+            }
+            if (!exprSymbol.getKind().equals(SymbolKind.PARAMETER) &&
+                !exprSymbol.getKind().equals(SymbolKind.VARIABLE) &&
+                !exprSymbol.getKind().equals(SymbolKind.CONSTANT)) {
+                throw new YAPLException(CompilerError.SymbolIllegalUse, exprToken, exprSymbol);
+            }
+            attr = new AttribImpl(Attrib.Constant, exprSymbol.getType(), exprToken);
+        }
+        [ attr = Selector(attr) ]
+
+        | attr = ArrayLen()
+    )
+    { return attr; }
+}
+
+Attrib UnaryExpr() throws YAPLException :
+{
+    {info("Found: UnaryExpr");}
+    Token op = null;
+    Attrib primaryExpr;
+}
+{
+    [op = AddOp()]
+    primaryExpr = PrimaryExpr() {
+        if (op == null) {
+            return primaryExpr;
+        }
+
+        primaryExpr = codegen.op1(op, primaryExpr);
+        return primaryExpr;
+    }
+}
+
+Attrib MulExpr() throws YAPLException :
+{
+    {info("Found: MulExpr");}
+	Attrib x, y;
+	Token op = null;
+}
+{
+    x = UnaryExpr()
+    (
+        op = MulOp() y = UnaryExpr()
+        {
+            codegen.op2(x, op, y);
+        }
+    )*
+    { return x; }
+}
+
+Attrib AddExpr() throws YAPLException :
+{
+    {info("Found: AddExpr");}
+    Attrib x, y;
+    Token op = null;
+}
+{
+    x = MulExpr()
+    (
+      op = AddOp() y = MulExpr()
+      {
+        codegen.op2(x, op, y);
+      }
+    )*
+    { return x; }
+}
+
+/* RelExpr = AddExpr [ RelOp AddExpr ] . */
+Attrib RelExpr() throws YAPLException :
+{
+    {info("Found: RelExpr");}
+	Attrib x, y;
+	Token op = null;
+}
+{
+	x = AddExpr()
+	[
+	  op = RelOp() y = AddExpr()
+	  {
+		x = codegen.relOp(x, op, y);
+	  }
+	]
+	{ return x; }
+}
+
+Attrib EqualExpr() throws YAPLException :         // TODO: IMPLEMENT THIS
+{
+    {info("Found: EqualExpr");}
+    Attrib operand1;
+    Attrib operand2 = null;
+    Token operation = null;
+}
+{
+    operand1 = RelExpr()
+    [
+        operation = EqualOp()
+        operand2 = RelExpr()
+        {
+            operand1 = codegen.equalOp(operand1, operation, operand2);
+        }
+    ]
+    {
+        return operand1;
+    }
+}
+
+Attrib CondAndExpr() throws YAPLException :       // TODO: IMPLEMENT THIS
+{
+    {info("Found: CondAndExpr");}
+    Attrib operand1;
+    Attrib operand2 = null;
+    Token operation = null;
+}
+{
+    operand1 = EqualExpr()
+    (
+        operation = <AND>
+        operand2 = EqualExpr()
+        {
+            operand1 = codegen.logicOp(operand1, operation, operand2);
+        }
+    )*
+    {
+        return operand1;
+    }
+}
+
+Attrib CreationExpr() throws YAPLException :
+{
+    {info("Found: CreationExpr");}
+    List<Attrib> indices;
+    Type t;
+    Attrib index;
+    Token tok;
+}
+{
+    {
+        indices = new ArrayList<Attrib>();
+    }
+    tok = <NEW> t = NonArrayType()                {info("Found: <NEW> NonArrayType"+": "+t.toString());}
+    (
+        tok = <BRACKET_LEFT>                      {info("Found: <BRACKET_LEFT>");}
+         index = Expr()
+         {
+            if (!(index.getType() instanceof IntType)) {
+                throw new YAPLException(CompilerError.BadArraySelector, tok, null);
+            }
          }
-         if (!arraySymbol.getKind().equals(SymbolKind.PARAMETER) &&
-             !arraySymbol.getKind().equals(SymbolKind.VARIABLE)) {
-             throw new YAPLException(CompilerError.SymbolIllegalUse, arrayToken, arraySymbol);
-         }
+         {indices.add(index);}
+        <BRACKET_RIGHT>                     {info("Found: <BRACKET_RIGHT> ");}
+    )*
+    {
+        if (!indices.isEmpty()) {
+            t = new ArrayType((NonArrayType) t, indices.size());
+            for (int i = 0; i < indices.size(); i++) {
+                codegen.storeArrayDim(i, indices.get(i));
+            }
+            return codegen.allocArray((ArrayType) t, tok);
+        }
+
+        if (!(t instanceof RecordType)) {
+            throw new YAPLException(CompilerError.InvalidNewType, tok, null);
+        }
+        return new AttribImpl(Attrib.Constant, t, tok);
     }
-     [ Selector() ]
 }
 
-void PrimaryExpr() throws YAPLException :
-{ Token exprToken;}
+Attrib Expr() throws YAPLException :                      //TODO: IMPLEMENT THIS
 {
-Literal() | "(" Expr()")" | ProcedureCall()
-  |
-  exprToken=<IDENT>{
-    Symbol exprSymbol = symbolTable.lookup(exprToken.image);
-    if (exprSymbol == null) {
-        throw new YAPLException(CompilerError.IdentNotDecl, exprToken, null);
+    {info("Found: Expr");}
+    Attrib operand1;
+    Attrib operand2 = null;
+    Token operation = null;
+}
+{
+    operand1 = CondAndExpr()
+    (
+        operation = <OR>
+        operand2 = CondAndExpr()
+        {
+            operand1 = codegen.logicOp(operand1, operation, operand2);
+        }
+    )*
+    {
+        return operand1;
     }
-    if (!exprSymbol.getKind().equals(SymbolKind.PARAMETER) &&
-        !exprSymbol.getKind().equals(SymbolKind.VARIABLE) &&
-        !exprSymbol.getKind().equals(SymbolKind.CONSTANT)) {
-        throw new YAPLException(CompilerError.SymbolIllegalUse, exprToken, exprSymbol);
+    |
+    operand1 = CreationExpr()
+    {
+        return operand1;
     }
-  }
-  [ Selector() ] | ArrayLen()
 }
 
-void UnaryExpr() throws YAPLException :
-{}
+/***************** END EXPRESSIONS ****************************/
+
+List<Attrib> ArgumentList() throws YAPLException :              //TODO: IMPLEMENT THIS
 {
-[AddOp()] PrimaryExpr()
+    {info("Found: ArgumentList");}
+    List<Attrib> attribs;
+    { attribs = new ArrayList<Attrib>(); }
+    Attrib curr;
+}
+{
+    curr = Expr()
+    {
+        if (curr.getType() instanceof VoidType) {
+            throw new YAPLException(CompilerError.ProcNotFuncExpr, curr.getToken(), null);
+        }
+    }
+    { attribs.add(curr); }
+    (
+        <COMMA>
+        curr = Expr()
+        { attribs.add(curr); }
+    )*
+
+    { return attribs; }
 }
 
-void MulExpr() throws YAPLException :
-{}
+Attrib ProcedureCall() throws YAPLException :             //TODO: IMPLEMENT THIS
 {
-UnaryExpr() ( MulOp() UnaryExpr() )*
+    {info("Found: ProcedureCall");}
+    Token procedureToken;
+    List<Attrib> attribs;
+    Symbol procedureSymbol;
+    { attribs = new ArrayList<Attrib>(); }
+    Attrib returnAttrib;
 }
-
-void AddExpr() throws YAPLException :
-{}
 {
-MulExpr() ( AddOp() MulExpr() )*
-}
-
-void RelExpr() throws YAPLException :
-{}
-{
-AddExpr() [ RelOp() AddExpr() ]
-}
-
-void EqualExpr() throws YAPLException :
-{}
-{
-RelExpr() [ EqualOp() RelExpr() ]
-}
-
-void CondAndExpr() throws YAPLException :
-{}
-{
-EqualExpr() ( "And" EqualExpr() )*
-}
-
-void CreationExpr() throws YAPLException :
-{}
-{
-"new" NonArrayType() ( "[" Expr() "]" )*
-}
-
-void Expr() throws YAPLException :
-{}
-{
-CondAndExpr() ( "Or" CondAndExpr() )* | CreationExpr()
-}
-
-
-void ArgumentList() throws YAPLException :
-{}
-{
-Expr() ( "," Expr() )*
-}
-
-void ProcedureCall() throws YAPLException :
-{ Token procedureToken; }
-{
-    procedureToken=<IDENT>{
-        Symbol symbol = symbolTable.lookup(procedureToken.image);
-        if (symbol == null) {
+    procedureToken = <IDENT>                        {info("Found: <IDENT>", procedureToken);}
+    {
+        procedureSymbol = symbolTable.lookup(procedureToken.image);
+        if (procedureSymbol == null) {
             throw new YAPLException(CompilerError.IdentNotDecl, procedureToken, null);
         }
 
-        if (!symbol.getKind().equals(SymbolKind.PROCEDURE)) {
-            throw new YAPLException(CompilerError.SymbolIllegalUse, procedureToken, symbol);
+        if (!procedureSymbol.getKind().equals(SymbolKind.PROCEDURE)) {
+            throw new YAPLException(CompilerError.SymbolIllegalUse, procedureToken, procedureSymbol);
         }
-
     }
-     "(" [ ArgumentList() ] ")"
+    <PAR_LEFT> [ attribs = ArgumentList() ] <PAR_RIGHT>
+    {
+        return codegen.callProc(procedureSymbol, attribs, procedureToken);
+    }
 
 }
 
 void Assignment() throws YAPLException:
-{ Token lvalueToken; }
 {
-    lvalueToken=<IDENT>{
-        Symbol lvalueSymbol = symbolTable.lookup(lvalueToken.image);
+    Token lvalueToken;
+    {info("Found: Assignment");}
+    Symbol lvalueSymbol;
+    Attrib lvalue, rvalue;
+}
+{
+    lvalueToken=<IDENT>{                {info("Found: <IDENT>", lvalueToken);}
+        lvalueSymbol = symbolTable.lookup(lvalueToken.image);
         if (lvalueSymbol == null) {
             throw new YAPLException(CompilerError.IdentNotDecl, lvalueToken, lvalueSymbol);
         }
@@ -243,64 +534,188 @@ void Assignment() throws YAPLException:
             !lvalueSymbol.getKind().equals(SymbolKind.PARAMETER)) {
             throw new YAPLException(CompilerError.SymbolIllegalUse, lvalueToken, lvalueSymbol);
         }
-    }[ Selector() ] ":=" Expr()
+        lvalue = new AttribImpl(Attrib.Constant, lvalueSymbol.getType(), lvalueToken);
+    }
+    [ lvalue = Selector(lvalue) ]
+
+    <ASSIGN>            {info("Found: <ASSIGN>");}
+    rvalue = Expr()
+    {
+        codegen.assign(lvalue, rvalue);
+    }
 }
 
-void IfStatement() throws YAPLException :
-{}
+boolean IfStatement(Type neededReturnType, Token parTok, Symbol parent) throws YAPLException :
 {
-"If" Expr() "Then" StatementList() [ "Else" StatementList() ] "EndIf"
+    {info("Found: IfStatement");}
+    Attrib cond;		// condition expression
+    String elseLabel, endLabel;
+    boolean returnFound = false;
 }
-
-void WhileStatement() throws YAPLException :
-{}
 {
-"While" Expr() "Do" StatementList() "EndWhile"
+    <IF> cond = Expr()  {info("Found: <IF>");}
+    {
+        elseLabel = codegen.newLabel();
+        codegen.branchIfFalse(cond, elseLabel);
+    }
+    <THEN> returnFound = StatementList(neededReturnType, parTok, parent)      {info("Found: <THEN>");}
+    {
+        endLabel = codegen.newLabel();
+        codegen.jump(endLabel);
+        codegen.assignLabel(elseLabel);
+    }
+    [
+        <ELSE>                  {info("Found: <ELSE>");}
+        StatementList(neededReturnType, parTok, parent)
+    ]
+    <ENDIF>                    {info("Found: <ENDIF>");}
+    {
+        codegen.assignLabel(endLabel);
+        return returnFound;
+    }
 }
 
-void ReturnStatement() throws YAPLException :
-{}
+boolean WhileStatement(Type neededReturnType, Token parTok, Symbol parent) throws YAPLException :
 {
-"Return" [ Expr() ]
+    {info("Found: WhileStatement");}
+	Attrib cond;		// condition expression
+	String loopLabel, endLabel;
+	boolean returnFound = false;
 }
-
-void WriteStatement() :
-{}
 {
-"Write" <STRING>
+    <WHILE>                             {info("Found: <WHILE>");}
+    {
+        loopLabel = codegen.newLabel();
+        codegen.assignLabel(loopLabel);
+    }
+    cond = Expr()
+    {
+        endLabel = codegen.newLabel();
+        codegen.branchIfFalse(cond, endLabel);
+    }
+    <DO>                                    {info("Found: <DO>");}
+    returnFound = StatementList(neededReturnType, parTok, parent)
+    <ENDWHILE>                          {info("Found: <ENDWHILE>");}
+    {
+        codegen.jump(loopLabel);
+        codegen.assignLabel(endLabel);
+        return returnFound;
+    }
 }
 
-void Statement() throws YAPLException :
-{}
+boolean ReturnStatement(Type neededReturnType, Token parTok, Symbol parent) throws YAPLException :           //TODO: IMPLEMENT THIS
 {
-IfStatement() | WhileStatement() | ReturnStatement()
-  | WriteStatement() | Assignment() | ProcedureCall() | Block()
+    {info("Found: ReturnStatement");}
+    Attrib returnAttrib = null;
+    Token tok;
+    boolean returnFound = false;
 }
-
-void StatementList() throws YAPLException :
-{}
 {
-( Statement() ";" )*
+    tok = <RETURN>
+    { returnAttrib = new AttribImpl(Attrib.Constant, new VoidType(), tok); }
+    [ returnAttrib = Expr() ]
+    {
+        if (!(returnAttrib.getType() instanceof VoidType)) {
+            returnFound = true;
+        }
+        if (neededReturnType instanceof VoidType && !(returnAttrib.getType() instanceof VoidType)) {
+            if (parent.getKind().equals(SymbolKind.PROCEDURE)) {
+                throw new YAPLException(CompilerError.IllegalRetValProc, returnAttrib.getToken(), parent);
+            }
+            if (parent.getKind().equals(SymbolKind.PROGRAM)) {
+                throw new YAPLException(CompilerError.IllegalRetValMain, returnAttrib.getToken(), parent);
+            }
+        }
+        returnAttrib.checkReturnTypeCompatibleWith(neededReturnType, parent);
+        return returnFound;
+    }
 }
 
-void Block() throws YAPLException :
-{}
+void WriteStatement() throws YAPLException :
+{
+    {info("Found: WriteStatement");}
+	Token tok;
+}
+{
+    <WRITE> tok = <STRING>	{info("Found: <WRITE> <STRING>", tok);}
+    { codegen.writeString(tok.image); }
+}
+
+boolean Statement(Type neededReturnType, Token parTok, Symbol parent) throws YAPLException :
+{
+    boolean returnFound = false;
+    {info("Found: Statement");}
+}
+{
+    returnFound = IfStatement(neededReturnType, parTok, parent)           {info("Found: IfStatement");}
+    { return returnFound; }
+    | returnFound = WhileStatement(neededReturnType, parTok, parent)      {info("Found: WhileStatement");}
+    { return returnFound; }
+    | returnFound = ReturnStatement(neededReturnType, parTok, parent)     {info("Found: ReturnStatement");}
+    { return returnFound; }
+    | WriteStatement()      {info("Found: WriteStatement");}
+    { return returnFound; }
+    | Assignment()          {info("Found: Assignment");}
+    { return returnFound; }
+    | ProcedureCall()       {info("Found: ProcedureCall");}
+    { return returnFound; }
+    | returnFound = Block(neededReturnType, parTok, parent)               {info("Found: Block");}
+    { return returnFound; }
+}
+
+boolean StatementList(Type neededReturnType, Token parTok, Symbol parent) throws YAPLException :
+{
+    {info("Found: StatementList");}
+    Attrib returnAttrib = null;
+    boolean returnFoundOnce = false;
+    boolean returnFound = false;
+}
+{
+	(
+	  returnFound = Statement(neededReturnType, parTok, parent)
+	  {
+	    if (returnFound == true) {
+	        returnFoundOnce = true;
+	    }
+	  }
+	  <SEMICOLON>		{info("Found: <SEMICOLON>");}
+	)*
+	{ return returnFoundOnce; }
+
+}
+
+boolean Block(Type neededReturnType, Token parTok, Symbol parent) throws YAPLException :
+{
+    {info("Found: Block");}
+    boolean returnFound = false;
+}
 {
     {
         symbolTable.openScope(false);
     }
-    [ Decl() ] "Begin" StatementList() "End"
+    [ Decl() ]
+    <BEGIN>
+    returnFound = StatementList(neededReturnType, parTok, parent)
+    <END>
     {
         symbolTable.closeScope();
+        return returnFound;
     }
 }
 
-void NonArrayType() throws YAPLException :
-{ Token typeToken;}
+Type NonArrayType() throws YAPLException :
 {
-"int" | "bool" |
+    {info("Found: NonArrayType");}
+    Token typeToken;
+}
+{
+    typeToken=<INT>				{info("Found: <INT>");}
+    { return new IntType(); }
 
-    typeToken=<IDENT>{
+    | typeToken=<BOOL>			{info("Found: <BOOL>");}
+    { return new BoolType(); }
+
+    | typeToken=<IDENT>{
         Symbol symbol = symbolTable.lookup(typeToken.image);
         if (symbol == null) {
             throw new YAPLException(CompilerError.IdentNotDecl, typeToken, symbol);
@@ -308,123 +723,246 @@ void NonArrayType() throws YAPLException :
         if (!symbol.getKind().equals(SymbolKind.TYPENAME)) {
             throw new YAPLException(CompilerError.SymbolIllegalUse, typeToken, symbol);
         }
+        return symbol.getType();
     }
 }
 
-void Type() throws YAPLException :
-{}
+Type Type() throws YAPLException :
 {
-NonArrayType() ( "[" "]" )*
+    {info("Found: Type");}
+    Type t;
+    int dim = 0;
 }
-
-void ReturnType() throws YAPLException :
-{}
 {
-"void" | Type()
-}
-void ConstDecl() throws YAPLException :
-{ Token constToken; }
-{
-  "Const"
-  constToken=<IDENT>
-  {
-    Symbol symbol = symbolTable.lookup(constToken.image);
-    if (symbolTable.containsIdentifierInCurrentScope(constToken.image)) {
-        throw new YAPLException(CompilerError.SymbolExists, constToken, symbol);
+    t = NonArrayType()
+    (
+        <BRACKET_LEFT> <BRACKET_RIGHT>		{info("Found: <BRACKET_LEFT> <BRACKET_RIGHT>");}
+        { dim++; }
+    )*
+    {
+        if (dim > 0) {
+            t = new ArrayType((NonArrayType)t, dim);
+        }
+        return t;
     }
-    Symbol constSymbol = new SymbolImpl(SymbolKind.CONSTANT, constToken.image);
-    constSymbol.setReadonly(true);
-    constSymbol.setReference(false);
-    symbolTable.addSymbol(constSymbol);
-  }
-   "=" Literal() ";"
 }
 
-void VarDecl(SymbolKind kind) throws YAPLException :
-{ Token varToken;}
+Type ReturnType() throws YAPLException :        //TODO: IMPLEMENT THIS
 {
-   Type()
-   varToken=<IDENT>{
-     Symbol symbol = symbolTable.lookup(varToken.image);
+    {info("Found: ReturnType");}
+    Type t;
+}
+{
+    <VOID>          {info("Found: <VOID>");}
+    {
+        t = new VoidType();
+        return t;
+    }
+    |   t = Type()
+    {
+        return t;
+    }
+}
+
+/**************************************** DECLARATIONS ***************************************/
+
+void ConstDecl() throws YAPLException :         //TODO: IMPLEMENT THIS
+{
+    {info("Found: ConstDecl");}
+    Token constToken;
+    Attrib attr;
+}
+{
+    <CONST> constToken = <IDENT>            {info("Found: <CONST> <IDENT>", constToken);}
+    {
+        Symbol symbol = symbolTable.lookup(constToken.image);
+        if (symbolTable.containsIdentifierInCurrentScope(constToken.image)) {
+            throw new YAPLException(CompilerError.SymbolExists, constToken, symbol);
+        }
+        Symbol constSymbol = new SymbolImpl(SymbolKind.CONSTANT, constToken.image);
+        constSymbol.setReadonly(true);
+        constSymbol.setReference(false);
+    }
+    "="
+    attr = Literal()
+    {
+        constSymbol.setType(attr.getType());
+        symbolTable.addSymbol(constSymbol);
+    }
+    <SEMICOLON>
+}
+
+List<Symbol> VarDecl(SymbolKind kind) throws YAPLException :
+{
+    {info("Found: VarDecl");}
+    Token varToken;
+    Symbol symbol;
+    Type type;
+    List<Symbol> symbols = new ArrayList<Symbol>();
+}
+{
+   type = Type()
+   varToken = <IDENT>       {info("Found: IDENT", varToken);}
+   {
+     symbol = symbolTable.lookup(varToken.image);
      if (symbolTable.containsIdentifierInCurrentScope(varToken.image)) {
         throw new YAPLException(CompilerError.SymbolExists, varToken, symbol);
      }
-     Symbol varSymbol = new SymbolImpl(kind, varToken.image);
-     varSymbol.setReadonly(false);
-     varSymbol.setReference(false);
-     symbolTable.addSymbol(varSymbol);
+     symbol = new SymbolImpl(kind, varToken.image);
+     symbol.setType(type);
+     symbol.setReadonly(false);
+     symbol.setReference(false);
+     symbolTable.addSymbol(symbol);
+     codegen.allocVariable(symbol);
+
+     symbols.add(symbol);
    }
-   ( "," varToken=<IDENT>{
+   ( <COMMA> varToken = <IDENT>     {info("Found: <COMMA> <IDENT>", varToken);}
+        {
             symbol = symbolTable.lookup(varToken.image);
-             if (symbolTable.containsIdentifierInCurrentScope(varToken.image)) {
+            if (symbolTable.containsIdentifierInCurrentScope(varToken.image)) {
                 throw new YAPLException(CompilerError.SymbolExists, varToken, symbol);
-             }
-            varSymbol = new SymbolImpl(kind, varToken.image);
-            varSymbol.setReadonly(false);
-            varSymbol.setReference(false);
-            symbolTable.addSymbol(varSymbol);
+            }
+            symbol = new SymbolImpl(kind, varToken.image);
+            symbol.setType(type);
+            symbol.setReadonly(false);
+            symbol.setReference(false);
+            symbolTable.addSymbol(symbol);
+            codegen.allocVariable(symbol);
+
+            symbols.add(symbol);
         }
-    )* ";"
+    )*
+    <SEMICOLON>         {info("Found: <SEMICOLON>");}
+    {
+        return symbols;
+    }
 }
 
-void TypeDecl() throws YAPLException :
-{ Token recordToken; }
+void TypeDecl() throws YAPLException :      //TODO: IMPLEMENT
 {
- "Record"
- recordToken=<IDENT>{
-    Symbol symbol = symbolTable.lookup(recordToken.image);
-     if (symbolTable.containsIdentifierInCurrentScope(recordToken.image)) {
-        throw new YAPLException(CompilerError.SymbolExists, recordToken, symbol);
-     }
-    Symbol recordSymbol = new SymbolImpl(SymbolKind.TYPENAME, recordToken.image);
-    recordSymbol.setReadonly(false);
-    recordSymbol.setReference(false);
-    symbolTable.addSymbol(recordSymbol);
-    symbolTable.openScope(false);
-  }
+    {info("Found: TypeDecl");}
+    Token recordToken;
+    List<Symbol> fields;
+    List<Symbol> fields2;
+    Symbol recordSymbol;
+    RecordType recType;
+}
+{
+    <RECORD> recordToken=<IDENT>    {info("Found: <RECORD> <IDENT>", recordToken);}
+    {
+        Symbol symbol = symbolTable.lookup(recordToken.image);
+        if (symbolTable.containsIdentifierInCurrentScope(recordToken.image)) {
+            throw new YAPLException(CompilerError.SymbolExists, recordToken, symbol);
+        }
+        recordSymbol = new SymbolImpl(SymbolKind.TYPENAME, recordToken.image);
+        recordSymbol.setReadonly(false);
+        recordSymbol.setReference(false);
+        symbolTable.addSymbol(recordSymbol);
+        recType = new RecordType(recordToken.image);
+        recordSymbol.setType(recType);
+        symbolTable.openScope(false);
+    }
 
-  VarDecl(SymbolKind.FIELD) ( VarDecl(SymbolKind.FIELD) )*
-  "EndRecord"{
-     symbolTable.closeScope();
-   }
-   ";"
+    fields = VarDecl(SymbolKind.FIELD)
+    (
+        fields2 = VarDecl(SymbolKind.FIELD)
+        {
+            fields.addAll(fields2);
+        }
+    )*
+    {
+        for (Symbol sym : fields) {
+            recType.addField(sym);
+        }
+    }
+    <END_RECORD>                 {info("Found: <END_RECORD>");}
+    {
+        symbolTable.closeScope();
+    }
+    <SEMICOLON>                 {info("Found: <SEMICOLON>");}
 }
 void Decl() throws YAPLException :
-{}
 {
-     "Declare" ( ConstDecl() | VarDecl(SymbolKind.VARIABLE) | TypeDecl() )*
+    {info("Found: Decl");}
 }
-void FormalParam() throws YAPLException :
 {
+     <DECL>             {info("Found: <DECL>");}
+     (
+        ConstDecl()
+        | VarDecl(SymbolKind.VARIABLE)
+        | TypeDecl()
+     )*
+}
+
+/********************************************* END DECLARATIONS *****************************/
+
+Symbol FormalParam() throws YAPLException :       //TODO: IMPLEMENT
+{
+    {info("Found: FormalParam");}
     Token identToken;
+    Type t;
+    Symbol symbol;
 }
 {
-     Type()
-     identToken=<IDENT> {
-        Symbol symbol = symbolTable.lookup(identToken.image);
+     t = Type() identToken=<IDENT>              {info("Found: <IDENT>", identToken);}
+     {
+        symbol = symbolTable.lookup(identToken.image);
          if (symbolTable.containsIdentifierInCurrentScope(identToken.image)) {
              throw new YAPLException(CompilerError.SymbolExists, identToken, symbol);
          }
 
          symbol = new SymbolImpl(SymbolKind.PARAMETER, identToken.image);
+         symbol.setType(t);
          symbolTable.addSymbol(symbol);
+         return symbol;
      }
 }
-void FormalParamList() throws YAPLException :
-{}
+List<Symbol> FormalParamList() throws YAPLException :   //TODO: IMPLEMENT
 {
-     FormalParam() ( "," FormalParam() )*
+    {info("Found: FormalParamList");}
+    List<Symbol> symbolList;
+    Symbol curr;
+}
+{
+    {
+        symbolList = new ArrayList<Symbol>();
+    }
+     curr = FormalParam()
+     {
+        symbolList.add(curr);
+     }
+
+     (
+        <COMMA>                 {info("Found: <COMMA>");}
+        curr = FormalParam()
+        {
+            symbolList.add(curr);
+        }
+     )*
+     {
+        return symbolList;
+     }
 }
 void Procedure() throws YAPLException :
 {
+    {info("Found: Procedure");}
     Token procedureNameStartToken;
     Token procedureNameEndToken;
     Symbol procedureStartSymbol;
+    List<Symbol> parameterList;
+    Type type;
+    ProcedureType procedureType;
+    boolean returnFound = false;
 }
 {
-     "Procedure"
-     ReturnType()
-     procedureNameStartToken=<IDENT>{
+     {
+        parameterList = new ArrayList<Symbol>();
+     }
+     <PROCEDURE>                        {info("Found: <PROCEDURE>");}
+     type = ReturnType()
+     procedureNameStartToken = <IDENT>   {info("Found: <IDENT>", procedureNameStartToken);}
+     {
          Symbol symbol = symbolTable.lookup(procedureNameStartToken.image);
          if (symbolTable.containsIdentifierInCurrentScope(procedureNameStartToken.image)) {
              throw new YAPLException(CompilerError.SymbolExists, procedureNameStartToken, symbol);
@@ -434,28 +972,41 @@ void Procedure() throws YAPLException :
          symbolTable.addSymbol(procedureStartSymbol);
          symbolTable.openScope(true);
 
+         procedureType = new ProcedureType(parameterList, type, procedureNameStartToken.image);
      }
-     "(" [ FormalParamList() ] ")" Block()
+     <PAR_LEFT>                     {info("Found: <PAR_LEFT>");}
+     [
+        parameterList = FormalParamList()
+        {
+            procedureType.setParameterList(parameterList);
+        }
+     ]
+     {procedureStartSymbol.setType(procedureType);}
+     <PAR_RIGHT>        {info("Found: <PAR_RIGHT>");}
+     returnFound = Block(type, procedureNameStartToken, procedureStartSymbol)
 
      procedureNameEndToken=<IDENT>{
+        if (!returnFound && !(type instanceof VoidType)) {
+            throw new YAPLException(CompilerError.MissingReturn, procedureNameEndToken, procedureStartSymbol);
+        }
 
         if (procedureNameEndToken.image.compareTo(procedureNameStartToken.image) != 0) {
             throw new YAPLException(CompilerError.EndIdentMismatch, procedureNameEndToken, procedureStartSymbol);
         }
-
         symbolTable.closeScope();
-     }";"
+     }
+     <SEMICOLON>
 }
 void Program() throws YAPLException :
 {
+    {info("Found: Program");}
     Token programNameStartToken;
     Token programNameEndToken;
     Symbol programNameStartSymbol;
+    Type returnType = new VoidType();
 }
 {
-
-     "Program"
-     programNameStartToken=<IDENT>
+     <PROGRAM> programNameStartToken=<IDENT>    {info("Found: <PROGRAM> <IDENT>", programNameStartToken);}
      {
         CA2_3.programName=programNameStartToken.image;
         symbolTable.openScope(true);
@@ -463,31 +1014,91 @@ void Program() throws YAPLException :
         symbolTable.addSymbol(programNameStartSymbol);
         symbolTable.openScope(true);
      }
-
-     ( Decl() | Procedure() )* "Begin" StatementList() "End"
-
-     programNameEndToken=<IDENT> {
+     ( Decl() | Procedure() )*
+     <BEGIN>        {info("Found: <BEGIN>");}
+     {
+        //codegen.enterMain();
+     }
+     StatementList(returnType, programNameStartToken, programNameStartSymbol)
+     <END>  programNameEndToken = <IDENT>        {info("Found: <END> <IDENT>", programNameEndToken);}
+     {
         if (programNameEndToken.image.compareTo(programNameStartToken.image) != 0) {
             throw new YAPLException(CompilerError.EndIdentMismatch, programNameEndToken, programNameStartSymbol);
         }
-
+        //codegen.exitMain();
         symbolTable.closeScope();
         symbolTable.closeScope();
-     }"."
+     }
+     <DOT>
+     <EOF>      // TODO: MAYBE THIS IS NOT NEEDED
 }
 
 
-TOKEN:
+TOKEN :
 {
-    <STRING: "\"" ( " " | <LETTER> | <DIGIT> | <OTHERCHAR> )* "\""> |
-    <IDENT: <LETTER> ( <LETTER> | <DIGIT> )*> |
-    <NUMBER: <DIGIT> ( <DIGIT> )*> |
-    <#LETTER: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P"
-    | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f"
-    | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v"
-    | "w" | "x" | "y" | "z" | "_"> |
-    <#DIGIT:  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"> |
-    <OTHERCHAR: "+" |"-" | "*" | "/" | "." | "," | ";" | ":" | "!" |
-        "?" | "="  | "#" | "%" | "<" | ">" | "$" | "(" | ")"
-        | "[" | "]" | "{" | "}" | "\\" | "@" | "&" | "^" | "|">
+	/* Separators */
+	    < SEMICOLON: ";" >
+	|   < COMMA: "," >
+	|   < DOT: "." >
+	|   < ASSIGN: ":=" >
+	/* Operator Symbols */
+	|   < LESS: "<" >
+	|   < LESS_EQUAL: "<=" >
+	|   < GREATER: ">" >
+	|   < GREATER_EQUAL: ">=" >
+	|   < EQUAL: "==" >
+	|   < NOT_EQUAL: "!=" >
+	|   < PLUS: "+" >
+	|   < MINUS: "-" >
+	|   < MULT: "*" >
+	|   < DIV: "/" >
+	|   < MODULO: "%" >
+	|   < SHARP: "#" >
+	/* Parentheses and Brackets */
+	|   < PAR_LEFT: "(" >
+	|   < PAR_RIGHT: ")" >
+	|   < BRACKET_LEFT: "[" >
+	|   < BRACKET_RIGHT: "]" >
+	/* Keywords */
+	|   < NEW: "new" >
+	|   < TRUE: "True" >
+	|   < FALSE: "False" >
+	|   < IF: "If" >
+	|   < THEN: "Then" >
+	|   < ELSE: "Else" >
+	|   < ENDIF: "EndIf" >
+	|   < WHILE: "While" >
+	|   < DO: "Do" >
+	|   < ENDWHILE: "EndWhile" >
+	|   < OR: "Or" >
+	|   < AND: "And" >
+	|   < WRITE: "Write" >
+	|   < WRITEINT: "WriteInt" >
+	|   < INT: "int" >
+	|   < BOOL: "bool" >
+	|   < VOID: "void">
+	|   < CONST: "Const">
+	|   < DECL: "Declare" >
+	|   < BEGIN: "Begin" >
+	|   < END: "End" >
+	|   < PROGRAM: "Program" >
+	|   < RECORD: "Record" >
+	|   < RETURN: "Return" >
+	|   < PROCEDURE: "Procedure" >
+	|   < END_RECORD: "EndRecord" >
+	/* Literals */
+	|	< #LETTER: ["a"-"z", "A"-"Z", "_"] >
+	|	< #DIGIT: ["0" - "9"] >
+	|	< #OTHERCHAR: ["+", "-", "*", "/", ".", ",", ";", ":", "!",
+	                   "?", "=", "#", "%", "<", ">", "$", "(", ")",
+	                   "[", "]", "{", "}", "\\", "@", "&", "^", "|"] >
+	|	< IDENT: <LETTER> (<LETTER> | <DIGIT>)* >
+	|	< NUMBER: (<DIGIT>)+ >
+	|	< STRING: "\"" (" " | <LETTER> | <DIGIT> | <OTHERCHAR>)* "\"" >
+
+}
+
+SPECIAL_TOKEN:
+{
+	< COMMENT: "/*" ( ~[ "*" ] | "*" ~[ "/" ] )* "*/" >
 }

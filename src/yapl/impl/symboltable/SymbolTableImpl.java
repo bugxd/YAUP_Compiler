@@ -3,7 +3,13 @@ package yapl.impl.symboltable;
 import yapl.interfaces.Symbol;
 import yapl.interfaces.SymbolKind;
 import yapl.interfaces.Symboltable;
+import yapl.lib.BoolType;
+import yapl.lib.IntType;
+import yapl.lib.ProcedureType;
+import yapl.lib.VoidType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 
@@ -18,18 +24,40 @@ public class SymbolTableImpl implements Symboltable {
 
         // Open Scope of Predefined Procedures
         openScope(true);
-        addSymbol(
-                new SymbolImpl(SymbolKind.PROCEDURE, "writeint")
-        );
-        addSymbol(
-                new SymbolImpl(SymbolKind.PROCEDURE, "writebool")
-        );
-        addSymbol(
-                new SymbolImpl(SymbolKind.PROCEDURE, "writeln")
-        );
-        addSymbol(
-                new SymbolImpl(SymbolKind.PROCEDURE, "readint")
-        );
+
+        // writeint
+        Symbol writeint = new SymbolImpl(SymbolKind.PROCEDURE, "writeint");
+        Symbol writeIntParam = new SymbolImpl(SymbolKind.PARAMETER, "x");
+        writeIntParam.setType(new IntType());
+        List<Symbol> paramList = new ArrayList<>();
+        paramList.add(writeIntParam);
+
+        writeint.setType(new ProcedureType(paramList, new VoidType(), "writeint"));
+        addSymbol(writeint);
+
+        // writebool
+        Symbol writebool = new SymbolImpl(SymbolKind.PROCEDURE, "writebool");
+        Symbol writeboolParam = new SymbolImpl(SymbolKind.PARAMETER, "x");
+        writeboolParam.setType(new BoolType());
+        List<Symbol> writeboolParamList = new ArrayList<>();
+        writeboolParamList.add(writeboolParam);
+
+        writebool.setType(new ProcedureType(writeboolParamList, new VoidType(), "writebool"));
+        addSymbol(writebool);
+
+        // writeln
+        Symbol writeln = new SymbolImpl(SymbolKind.PROCEDURE, "writeln");
+        List<Symbol> writelnParamList = new ArrayList<>();
+
+        writeln.setType(new ProcedureType(writelnParamList, new VoidType(), "writeln"));
+        addSymbol(writeln);
+
+        // readint
+        Symbol readint = new SymbolImpl(SymbolKind.PROCEDURE, "readint");
+        List<Symbol> readintParamList = new ArrayList<>();
+
+        readint.setType(new ProcedureType(readintParamList, new IntType(), "readint"));
+        addSymbol(readint);
     }
 
     @Override

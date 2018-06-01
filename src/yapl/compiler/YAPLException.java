@@ -26,6 +26,10 @@ public class YAPLException extends Exception implements CompilerError {
 
     @Override
     public String getMessage() {
+
+        if (currentToken == null || symbol == null) {
+            return "";
+        }
         switch (errorNumber) {
             case CompilerError.SymbolExists:
                 return "symbol '" + currentToken.image + "' already declared in current scope (as '" + symbol.getKind() + "')";
@@ -46,10 +50,16 @@ public class YAPLException extends Exception implements CompilerError {
     }
 
     public int line() {
+        if (currentToken == null) {
+            return -1;
+        }
         return currentToken.beginLine;
     }
 
     public int column() {
+        if (currentToken == null) {
+            return -1;
+        }
         return currentToken.beginColumn;
     }
 }
