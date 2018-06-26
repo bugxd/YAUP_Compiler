@@ -14,6 +14,7 @@ import static yapl.compiler.CA2_3Constants.*;
 public class CodeGenImpl implements CodeGen {
 
     private BackendAsmRM backend;
+    private int labelcount = 0;
 
     public CodeGenImpl(BackendAsmRM backend) {
         this.backend = backend;
@@ -21,7 +22,9 @@ public class CodeGenImpl implements CodeGen {
 
     @Override
     public String newLabel() {
-        return UUID.randomUUID().toString();        // TODO: 12.06.2018 CHECK IF THIS ACTUALLY WORKS
+        String label = "newLabel_" + labelcount;
+        labelcount++;
+        return label;
     }
 
     @Override
@@ -92,12 +95,30 @@ public class CodeGenImpl implements CodeGen {
 
     @Override
     public void storeArrayDim(int dim, Attrib length) throws YAPLException {
-        //backend.storeArrayDim(dim, length.);
+        IntType t = (IntType) length.getType();
+        if (length.getKind() == Attrib.MemoryOperand) {
+            byte reg = backend.allocReg();
+            backend.loadWord(reg, length.getOffset(), length.isGlobal());
+            backend.storeArrayDim(dim, reg);
+            backend.freeReg(reg);
+        }
+        if (length.getKind() == Attrib.RegValue) {
+            backend.storeArrayDim(dim, length.getRegister());
+        }
+        if (length.getKind() == Attrib.Constant) {
+            byte reg = backend.allocReg();
+            backend.loadConst(reg, t.getValue());
+            backend.storeArrayDim(dim, reg);
+            backend.freeReg(reg);
+        }
     }
 
     @Override
     public Attrib allocArray(ArrayType arrayType, Token token) throws YAPLException {
-        return new AttribImpl(Attrib.Constant, arrayType, token);
+        byte baseAddrReg = backend.allocReg();
+        backend.allocArray(baseAddrReg);
+
+        return new AttribImpl(Attrib.RegAddress, arrayType, token);
     }
 
     @Override
@@ -112,6 +133,11 @@ public class CodeGenImpl implements CodeGen {
 
     @Override
     public void arrayOffset(Attrib arr, Attrib index) throws YAPLException {
+        ArrayType type = (ArrayType) arr.getType();
+
+        arr.setKind(Attrib.ArrayElement);
+        arr.setType(type.subarray());
+        //arr.setOffset(arr.);
 
     }
 

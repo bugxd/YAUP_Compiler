@@ -213,9 +213,11 @@ Attrib Selector(Attrib arrayOrRecord) throws YAPLException :
                 if (!(arrayOrRecord.getType() instanceof ArrayType)) {
                     throw new YAPLException(CompilerError.SelectorNotArray, tok, null);
                 }
+
                 ArrayType arrayType = (ArrayType) arrayOrRecord.getType();
                 typeAfterSelection = arrayType.subarray();
-                nextArrayOrRecord = new AttribImpl(Attrib.Constant, typeAfterSelection, index.getToken());
+                nextArrayOrRecord = new AttribImpl(Attrib.ArrayElement, typeAfterSelection, index.getToken());
+                codegen.arrayOffset(arrayOrRecord, index);
             }
         )
         | <DOT> tok = <IDENT>           // TODO: CHECK THIS
