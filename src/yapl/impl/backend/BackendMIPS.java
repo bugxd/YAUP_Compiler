@@ -17,9 +17,9 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   private static final int NUMBER_RESERVED_PASSED_STACKARGUMENTS = 1;
   private static final int NUMBER_RESERVED_INNER_STACKARGUMENTS = 18;   // 1 for return address, 17 for registers
 
-  private final int addressNewLineString;
-  private final int addressTrueString;
-  private final int addressFalseString;
+  private int addressNewLineString;
+  private int addressTrueString;
+  private int addressFalseString;
 
   public BackendMIPS(PrintStream outputStream) {
     this.outputStream = outputStream;
@@ -29,10 +29,8 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     if (outputStream == null) {
       throw new IllegalArgumentException("outputStream must not be null!");
     }
+    //outputStream.append(".globl main\n");
 
-    addressNewLineString =  allocNewLineConstant();
-    addressTrueString = allocStringConstant("True");
-    addressFalseString = allocStringConstant("False");
   }
 
   private void changeSegment(Segment segment) {
@@ -542,6 +540,10 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
    */
   @Override
   public void enterMain() {
+
+    addressNewLineString =  allocNewLineConstant();
+    addressTrueString = allocStringConstant("True");
+    addressFalseString = allocStringConstant("False");
 
     registers.getStackPointerRegister().requestNewOffset();
 

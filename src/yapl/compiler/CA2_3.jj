@@ -1015,7 +1015,10 @@ void Procedure() throws YAPLException :
             procedureType.setParameterList(parameterList);
         }
      ]
-     {procedureStartSymbol.setType(procedureType);}
+     {
+        procedureStartSymbol.setType(procedureType);
+        codegen.enterProc(procedureStartSymbol);
+     }
      <PAR_RIGHT>        {info("Found: <PAR_RIGHT>");}
      returnFound = Block(type, procedureNameStartToken, procedureStartSymbol)
 
@@ -1028,6 +1031,14 @@ void Procedure() throws YAPLException :
             throw new YAPLException(CompilerError.EndIdentMismatch, procedureNameEndToken, procedureStartSymbol);
         }
         symbolTable.closeScope();
+        Attrib returnVal;
+        if (type instanceof IntType || type instanceof BoolType) {
+            returnVal = new AttribImpl(Attrib.RegValue, type, null);
+        } else {
+            returnVal = new AttribImpl(Attrib.RegAddress, type, null);
+        }
+        codegen.returnFromProc(procedureStartSymbol, returnVal);
+        codegen.exitProc(procedureStartSymbol);
      }
      <SEMICOLON>
 }
@@ -1042,7 +1053,7 @@ void Program() throws YAPLException :
 {
      <PROGRAM> programNameStartToken=<IDENT>    {info("Found: <PROGRAM> <IDENT>", programNameStartToken);}
      {
-        codegen.enterMain();
+
         CA2_3.programName=programNameStartToken.image;
         symbolTable.openScope(true);
         programNameStartSymbol = new SymbolImpl(SymbolKind.PROGRAM, programNameStartToken.image);
@@ -1050,7 +1061,7 @@ void Program() throws YAPLException :
         symbolTable.openScope(true);
      }
      ( Decl() | Procedure() )*
-     <BEGIN>        {info("Found: <BEGIN>");}
+     <BEGIN>        {info("Found: <BEGIN>"); codegen.enterMain();}
      StatementList(returnType, programNameStartToken, programNameStartSymbol)
      <END>  programNameEndToken = <IDENT>        {info("Found: <END> <IDENT>", programNameEndToken);}
      {

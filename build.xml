@@ -120,6 +120,7 @@ User-relevant properties: (customize to your environment)
         <java jar="${mars-jar}" fork="true" output="${execlog}">
             <arg value="${outfile}"/>
             <arg value="nc"/>
+            <arg value="sm"/>
         </java>
         <replaceregexp file="${execlog}" match="(\r)?\n$" replace="" flags="s"/>
         <echo>Wrote output to ${execlog}</echo>

@@ -29,6 +29,8 @@ public class AttribImpl implements Attrib {
         this.isReadOnly = false;
     }
 
+
+
     @Override
     public Token getToken() {
         return token;

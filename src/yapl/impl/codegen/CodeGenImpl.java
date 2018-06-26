@@ -6,6 +6,7 @@ import yapl.impl.typecheck.AttribImpl;
 import yapl.interfaces.*;
 import yapl.lib.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +16,8 @@ public class CodeGenImpl implements CodeGen {
 
     private BackendAsmRM backend;
     private int labelcount = 0;
+
+    private List<Symbol> globalSymbolBuffer = new ArrayList<>();
 
     public CodeGenImpl(BackendAsmRM backend) {
         this.backend = backend;
@@ -66,25 +69,44 @@ public class CodeGenImpl implements CodeGen {
     public void allocVariable(Symbol sym) throws YAPLException {
         int addr;
         if (sym.isGlobal()) {
-            addr = backend.allocStaticData(4, "");
+            globalSymbolBuffer.add(sym);
+            addr = backend.allocStaticData(4, sym.getName());
             sym.setOffset(addr);
         } else {
             addr = backend.allocStack(4, "");
             sym.setOffset(addr);
-        }
 
-        if (sym.isReadonly()) {
-            byte register = backend.allocReg();
-            if (sym.getType() instanceof IntType) {
-                IntType t = (IntType) sym.getType();
-                backend.loadConst(register, t.getValue());
+            if (sym.isReadonly()) {
+                byte register = backend.allocReg();
+                if (sym.getType() instanceof IntType) {
+                    IntType t = (IntType) sym.getType();
+                    backend.loadConst(register, t.getValue());
+                }
+                if (sym.getType() instanceof BoolType) {
+                    BoolType t = (BoolType) sym.getType();
+                    backend.loadConst(register, backend.boolValue(t.getValue()));
+                }
+                backend.storeWord(register, addr, sym.isGlobal());
+                backend.freeReg(register);
             }
-            if (sym.getType() instanceof BoolType) {
-                BoolType t = (BoolType) sym.getType();
-                backend.loadConst(register, backend.boolValue(t.getValue()));
+        }
+    }
+
+    private void writeGlobalSymbols() {
+        for (Symbol sym : globalSymbolBuffer) {
+            if (sym.isReadonly()) {
+                byte register = backend.allocReg();
+                if (sym.getType() instanceof IntType) {
+                    IntType t = (IntType) sym.getType();
+                    backend.loadConst(register, t.getValue());
+                }
+                if (sym.getType() instanceof BoolType) {
+                    BoolType t = (BoolType) sym.getType();
+                    backend.loadConst(register, backend.boolValue(t.getValue()));
+                }
+                backend.storeWord(register, sym.getOffset(), sym.isGlobal());
+                backend.freeReg(register);
             }
-            backend.storeWord(register, addr, sym.isGlobal());
-            backend.freeReg(register);
         }
     }
 
@@ -497,6 +519,11 @@ public class CodeGenImpl implements CodeGen {
 
         ProcedureType procType = (ProcedureType) proc.getType();
         backend.enterProc(proc.getName(), procType.getParameterList().size());
+
+        for (Symbol sym : procType.getParameterList()) {
+            int addr = backend.allocStack(4, sym.getName());
+            sym.setOffset(addr);
+        }
     }
 
     @Override
@@ -506,6 +533,10 @@ public class CodeGenImpl implements CodeGen {
 
     @Override
     public void returnFromProc(Symbol proc, Attrib returnVal) throws YAPLException {
+        if (returnVal.getRegister() == -1) {
+            returnVal.setRegister(backend.allocReg());
+        }
+
         backend.returnFromProc(proc.getName()+"_end", returnVal.getRegister());
     }
 
@@ -569,6 +600,7 @@ public class CodeGenImpl implements CodeGen {
     @Override
     public void enterMain() {
         backend.enterMain();
+        writeGlobalSymbols();
     }
 
     @Override
