@@ -43,7 +43,7 @@ public class Test4
     }
     
     /**
-     * Usage: java yapl.Test4 [asm_file]
+     * Usage: java yapl.test.backend.rm.Test4 [asm_file]
      */
     public static void main(String[] args) throws Exception
     {

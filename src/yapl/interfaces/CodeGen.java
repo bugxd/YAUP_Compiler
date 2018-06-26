@@ -363,4 +363,8 @@ public interface CodeGen {
 	/** Generate code unconditionally jumping to <code>label</code>. */
 	public void jump(String label);
 
+	public void enterMain();
+
+	public void exitMain();
+
 }

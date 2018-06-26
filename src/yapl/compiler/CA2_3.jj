@@ -23,6 +23,7 @@ package yapl.compiler;
 
 import yapl.impl.symboltable.SymbolTableImpl;
 import yapl.impl.symboltable.SymbolImpl;
+import yapl.impl.backend.BackendMIPS;
 
 import yapl.impl.typecheck.AttribImpl;
 import yapl.impl.codegen.CodeGenImpl;
@@ -36,15 +37,22 @@ import java.util.ArrayList;
 public class CA2_3 {
 
   private static Symboltable symbolTable = new SymbolTableImpl();
-  private static CodeGen codegen = new CodeGenImpl();
+  private static CodeGen codegen;
 
   private static String programName = "unknownProgramName";
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException {
-
     try {
         CA2_3 parser = new CA2_3(new java.io.FileInputStream(args[0]));
+        codegen = new CodeGenImpl(
+            new BackendMIPS(
+                new java.io.PrintStream(
+                    new java.io.FileOutputStream(args[1])
+                )
+            )
+        );
+
         parser.Program();
         CompilerMessage.printOK(programName);
     } catch (java.io.FileNotFoundException e) {
@@ -147,18 +155,36 @@ Attrib Literal() throws YAPLException :
 {
 	{info("Found: Literal");}
 	Token tok;
+	Attrib attrib;
 }
 {
 
 	tok = <TRUE>				{info("Found: <TRUE>");}
-	{ return new AttribImpl(Attrib.Constant, new BoolType(true), token); }
+	{
+	    attrib = new AttribImpl(Attrib.Constant, new BoolType(true), token);
+	    attrib.setConstant(true);
+	    attrib.setGlobal(false);
+	    attrib.setReadonly(true);
+	    return attrib;
+	}
 
 	| tok = <FALSE>			{info("Found: <FALSE>");}
-	{ return new AttribImpl(Attrib.Constant, new BoolType(false), token); }
+	{
+	    attrib = new AttribImpl(Attrib.Constant, new BoolType(false), token);
+	    attrib.setConstant(true);
+        attrib.setGlobal(false);
+        attrib.setReadonly(true);
+        return attrib;
+	}
 
 	| tok = <NUMBER>	{info("Found: <NUMBER>", tok);}
-	{ return new AttribImpl(
-	  	Attrib.Constant,new IntType(Integer.parseInt(tok.image)), token); }
+	{
+	    attrib = new AttribImpl(Attrib.Constant,new IntType(Integer.parseInt(tok.image)), token);
+	  	attrib.setConstant(true);
+        attrib.setGlobal(false);
+        attrib.setReadonly(true);
+        return attrib;
+	}
 
 }
 
@@ -275,7 +301,11 @@ Attrib PrimaryExpr() throws YAPLException :
                 !exprSymbol.getKind().equals(SymbolKind.CONSTANT)) {
                 throw new YAPLException(CompilerError.SymbolIllegalUse, exprToken, exprSymbol);
             }
-            attr = new AttribImpl(Attrib.Constant, exprSymbol.getType(), exprToken);
+
+            attr = new AttribImpl(Attrib.MemoryOperand, exprSymbol.getType(), exprToken);
+            attr.setConstant(exprSymbol.isReadonly());
+            attr.setGlobal(exprSymbol.isGlobal());
+            attr.setOffset(exprSymbol.getOffset());
         }
         [ attr = Selector(attr) ]
 
@@ -535,6 +565,7 @@ void Assignment() throws YAPLException:
             throw new YAPLException(CompilerError.SymbolIllegalUse, lvalueToken, lvalueSymbol);
         }
         lvalue = new AttribImpl(Attrib.Constant, lvalueSymbol.getType(), lvalueToken);
+        lvalue.setSymbol(lvalueSymbol);
     }
     [ lvalue = Selector(lvalue) ]
 
@@ -788,6 +819,7 @@ void ConstDecl() throws YAPLException :         //TODO: IMPLEMENT THIS
     {
         constSymbol.setType(attr.getType());
         symbolTable.addSymbol(constSymbol);
+        codegen.allocVariable(constSymbol);
     }
     <SEMICOLON>
 }
@@ -1008,6 +1040,7 @@ void Program() throws YAPLException :
 {
      <PROGRAM> programNameStartToken=<IDENT>    {info("Found: <PROGRAM> <IDENT>", programNameStartToken);}
      {
+        codegen.enterMain();
         CA2_3.programName=programNameStartToken.image;
         symbolTable.openScope(true);
         programNameStartSymbol = new SymbolImpl(SymbolKind.PROGRAM, programNameStartToken.image);
@@ -1016,16 +1049,13 @@ void Program() throws YAPLException :
      }
      ( Decl() | Procedure() )*
      <BEGIN>        {info("Found: <BEGIN>");}
-     {
-        //codegen.enterMain();
-     }
      StatementList(returnType, programNameStartToken, programNameStartSymbol)
      <END>  programNameEndToken = <IDENT>        {info("Found: <END> <IDENT>", programNameEndToken);}
      {
         if (programNameEndToken.image.compareTo(programNameStartToken.image) != 0) {
             throw new YAPLException(CompilerError.EndIdentMismatch, programNameEndToken, programNameStartSymbol);
         }
-        //codegen.exitMain();
+        codegen.exitMain();
         symbolTable.closeScope();
         symbolTable.closeScope();
      }

@@ -1,11 +1,11 @@
 package yapl.test.backend.rm;
 
+import yapl.impl.backend.BackendMIPS;
+import yapl.interfaces.BackendAsmRM;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-
-import yapl.impl.backend.BackendMIPS;
-import yapl.interfaces.BackendAsmRM;
 
 /**
  * BackendAsmRM test: records.

@@ -17,6 +17,10 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   private static final int NUMBER_RESERVED_PASSED_STACKARGUMENTS = 1;
   private static final int NUMBER_RESERVED_INNER_STACKARGUMENTS = 18;   // 1 for return address, 17 for registers
 
+  private final int addressNewLineString;
+  private final int addressTrueString;
+  private final int addressFalseString;
+
   public BackendMIPS(PrintStream outputStream) {
     this.outputStream = outputStream;
     this.registers = new Registers();
@@ -26,7 +30,9 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
       throw new IllegalArgumentException("outputStream must not be null!");
     }
 
-    writePredefinedProcedures();
+    addressNewLineString =  allocNewLineConstant();
+    addressTrueString = allocStringConstant("True");
+    addressFalseString = allocStringConstant("False");
   }
 
   private void changeSegment(Segment segment) {
@@ -115,6 +121,16 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     return registers.getGlobalPointerRegister().allocateBytes(bytesToAllocate, 4);
   }
 
+  private int allocNewLineConstant() {
+    changeSegment(Segment.DATA);
+
+    int bytesToAllocate = (1);
+
+    outputStream.println(format(".asciiz\t{0}", "\"\\n\""));
+    outputStream.println(format(".align {0}", wordAlignmentParameter));
+    return registers.getGlobalPointerRegister().allocateBytes(bytesToAllocate, 4);
+  }
+
   // TODO: 05.04.18 TEST
   @Override
   public int allocStack(int bytes, String comment) {
@@ -152,7 +168,7 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     // RESTORE REGISTER VALUES
   }
 
-  private void move(byte destReg, byte srcReg) {
+  public void move(byte destReg, byte srcReg) {
     Register destinationRegister = registers.getRegisterByNumber(destReg);
     Register sourceRegister = registers.getRegisterByNumber(srcReg);
 
@@ -329,7 +345,6 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     changeSegment(Segment.TEXT);
 
     //saveRegisters!!
-
     loadConst(registers.getV0().getRegisterNumber(), SyscallCode.PRINT_STRING.getValue());
     loadAddress(registers.getA0().getRegisterNumber(), addr, true);
     syscall();
@@ -550,6 +565,8 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     loadConst(registers.getV0().getRegisterNumber(), SyscallCode.EXIT.getValue());
     syscall();
     registers.freeAllRegister();
+
+    writePredefinedProcedures();
   }
 
   @Override
@@ -667,6 +684,9 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   private void writePredefinedProcedures() {
     comment("PREDEFINED PROCEDURES START");
     writeProcedure_writeint();
+    writeProcedure_writebool();
+    writeProcedure_writeln();
+    //writeProcedure_readint();
     comment("PREDEFINED PROCEDURES END");
   }
 
@@ -683,4 +703,30 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     exitProc("writeint_end");
   }
 
+  private void writeProcedure_writebool() {
+    changeSegment(Segment.TEXT);
+    enterProc("writebool", 1);
+
+    byte r = allocReg();
+    loadWord(r, paramOffset(0), false);
+
+    branchIf(r, false, "writebool_L1");
+    freeReg(r);
+    writeString(addressTrueString);
+    jump("writebool_end");
+
+    emitLabel("writebool_L1", "");
+    writeString(addressFalseString);
+    returnFromProc("writebool_end", (byte) -1);
+    exitProc("writebool_end");
+  }
+
+  private void writeProcedure_writeln() {
+    changeSegment(Segment.TEXT);
+
+    enterProc("writeln", 0);
+    writeString(addressNewLineString);
+    returnFromProc("writeln_end", (byte) -1);
+    exitProc("writeln_end");
+  }
 }

@@ -13,7 +13,7 @@ import yapl.interfaces.BackendAsmRM;
 public class Test1
 {
     /**
-     * Usage: java yapl.Test1 [asm_file]
+     * Usage: java yapl.test.backend.rm.Test1 [asm_file]
      */
     public static void main(String[] args) throws Exception
     {

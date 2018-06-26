@@ -15,6 +15,7 @@ public class SymbolImpl implements Symbol {
     private boolean isGlobal;
     private boolean isReadonly;
     private boolean isReference;
+    private int offset;
 
 
     public SymbolImpl(SymbolKind symbolKind, String identifier) {
@@ -88,12 +89,12 @@ public class SymbolImpl implements Symbol {
 
     @Override
     public int getOffset() {
-        return 0;
+        return offset;
     }
 
     @Override
     public void setOffset(int offset) {
-
+        this.offset = offset;
     }
 
     @Override

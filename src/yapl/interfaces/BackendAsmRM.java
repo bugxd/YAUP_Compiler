@@ -32,7 +32,9 @@ package yapl.interfaces;
 public interface BackendAsmRM
 {
     /*--- implementation constants ---*/
-    
+
+	public void move (byte dest, byte src);
+
     /**
      * Return the machine word size in bytes.
      */

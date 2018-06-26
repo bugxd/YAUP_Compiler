@@ -14,7 +14,7 @@ import yapl.interfaces.BackendAsmRM;
 public class Test3
 {
     /**
-     * Usage: java yapl.Test3 [asm_file]
+     * Usage: java yapl.test.backend.rm.Test3 [asm_file]
      */
     public static void main(String[] args) throws Exception
     {

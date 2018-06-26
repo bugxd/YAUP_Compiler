@@ -51,7 +51,7 @@ public class Test5
     }
     
     /**
-     * Usage: java yapl.Test5 [asm_file]
+     * Usage: java yapl.test.backend.rm.Test5 [asm_file]
      */
     public static void main(String[] args) throws Exception
     {

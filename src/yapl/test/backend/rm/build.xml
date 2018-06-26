@@ -1,13 +1,13 @@
-<project name="YAPL Compiler - Backend Testing" default="eval-all" basedir="">
+<project name="YAPL Compiler - Backend Testing" default="eval-all" basedir=".">
 	<description>
     ANT build file for testing the YAPL compiler backend.
     M. Taschwer
 	</description>
 	
     <!-- customize to your environment -->
-    <property name="topdir" location="../../../../../"/>
-    <property name="ant-contrib-jar" location="${topdir}/resources/ant-contrib.jar"/>
-    <property name="marsjar" location="${topdir}/resources/mars.jar"/>
+    <property name="topdir" location="../../../../.."/>
+    <property name="ant-contrib-jar" location="/usr/share/java/ant-contrib.jar"/>
+    <property name="marsjar" location="${topdir}/mars/mars.jar"/>
 
 	<!-- source and build directories (need not be modified) -->
 	<property name="srcdir" location="${topdir}/src"/>
@@ -17,7 +17,7 @@
     <property name="asm-predefined" location="${topdir}/predefined.asm"/>
 
     <!-- list of Java test classes -->
-    <property name="testclasses" value="Test1,Test2,Test3,Test4,Test5,Test6,Test_Types"/>
+    <property name="testclasses" value="Test1,Test2,Test3,Test4,Test5,Test6"/>
     
     <!-- properties for invoking 'eval' target directly -->
     <property name="mainclass" value="yapl.test.backend.rm.Test1"/>
@@ -38,7 +38,7 @@
 	<target name="compile-java" depends="mkdirs"
         description="compile the sources" >
 		<javac srcdir="${srcdir}" destdir="${builddir}" debug="on" includeantruntime="false">
-			<include name="yapl/impl/backend/*.java"/>
+			<include name="yapl/impl/*.java"/>
 			<include name="yapl/interfaces/*.java"/>
 			<include name="yapl/test/backend/rm/*.java"/>
 		</javac>
@@ -85,8 +85,8 @@
 				<trycatch>
 					<try>
 						<antcall target="eval">
-							<param name="mainclass" value="yapl.test.backend.rm.@{testname}"/>
-							<param name="asmfile" location="@{testname}.asm"/>
+					        <param name="mainclass" value="yapl.test.backend.rm.@{testname}"/>
+					        <param name="asmfile" location="@{testname}.asm"/>
 							<param name="outputfile" location="@{testname}.txt"/>
 							<param name="truefile" location="@{testname}.true"/>
 						</antcall>
@@ -105,7 +105,7 @@
 	
 	<target name="clean" description="remove generated files">
 		<delete>
-			<fileset dir="" includes="*.asm *.txt" />
+			<fileset dir="." includes="*.asm *.txt" />
             <dirset dir="${builddir}"/>
 		</delete>
 	</target>

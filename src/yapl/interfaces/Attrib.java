@@ -119,4 +119,8 @@ public interface Attrib {
 
 
     public void checkReturnTypeCompatibleWith(Type other, Symbol symbol) throws YAPLException;
+
+	public void setSymbol(Symbol symbol);
+
+	public Symbol getSymbol();
 }
