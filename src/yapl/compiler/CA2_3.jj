@@ -198,7 +198,6 @@ Attrib Selector(Attrib arrayOrRecord) throws YAPLException :
     Token tok;
     Attrib index;
     Type typeAfterSelection;
-    Attrib nextArrayOrRecord = null;
 }
 {
     (
@@ -214,9 +213,9 @@ Attrib Selector(Attrib arrayOrRecord) throws YAPLException :
                     throw new YAPLException(CompilerError.SelectorNotArray, tok, null);
                 }
 
-                ArrayType arrayType = (ArrayType) arrayOrRecord.getType();
-                typeAfterSelection = arrayType.subarray();
-                nextArrayOrRecord = new AttribImpl(Attrib.ArrayElement, typeAfterSelection, index.getToken());
+                //ArrayType arrayType = (ArrayType) arrayOrRecord.getType();
+                //typeAfterSelection = arrayType.subarray();
+                //nextArrayOrRecord = new AttribImpl(Attrib.ArrayElement, typeAfterSelection, index.getToken());
                 codegen.arrayOffset(arrayOrRecord, index);
             }
         )
@@ -234,12 +233,12 @@ Attrib Selector(Attrib arrayOrRecord) throws YAPLException :
         }
 
         {
-            nextArrayOrRecord = new AttribImpl(Attrib.Constant, typeAfterSelection, tok);
+            codegen.recordOffset(arrayOrRecord, sym);//nextArrayOrRecord = new AttribImpl(Attrib.Constant, typeAfterSelection, tok);
         }
-    ) [ nextArrayOrRecord = Selector(nextArrayOrRecord) ]        // TODO: CHECK THIS
+    ) [ arrayOrRecord = Selector(arrayOrRecord) ]        // TODO: CHECK THIS
 
     {
-        return nextArrayOrRecord;
+        return arrayOrRecord;
     }
 }
 
@@ -265,6 +264,9 @@ Attrib ArrayLen() throws YAPLException:
         }
 
         attrib = new AttribImpl(Attrib.Constant, arraySymbol.getType(), arrayToken);
+        attrib.setSymbol(arraySymbol);
+        attrib.setOffset(arraySymbol.getOffset());
+        attrib.setGlobal(arraySymbol.isGlobal());
     }
      [ attrib = Selector(attrib) ] //TODO: CHECK THIS!
     {
@@ -345,7 +347,7 @@ Attrib MulExpr() throws YAPLException :
     (
         op = MulOp() y = UnaryExpr()
         {
-            codegen.op2(x, op, y);
+            x = codegen.op2(x, op, y);
         }
     )*
     { return x; }
@@ -362,7 +364,7 @@ Attrib AddExpr() throws YAPLException :
     (
       op = AddOp() y = MulExpr()
       {
-        codegen.op2(x, op, y);
+        x = codegen.op2(x, op, y);
       }
     )*
     { return x; }

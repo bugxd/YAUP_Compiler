@@ -1,5 +1,6 @@
 package yapl.impl.codegen;
 
+
 import yapl.compiler.Token;
 import yapl.compiler.YAPLException;
 import yapl.impl.typecheck.AttribImpl;
@@ -8,7 +9,6 @@ import yapl.lib.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static yapl.compiler.CA2_3Constants.*;
 
@@ -57,7 +57,7 @@ public class CodeGenImpl implements CodeGen {
 
     @Override
     public void freeReg(Attrib attr) {
-        if (attr.getKind() != Attrib.RegValue && attr.getKind() != Attrib.RegAddress) {
+        if (attr.getRegister() == -1) {
             return;
         }
 
@@ -140,7 +140,9 @@ public class CodeGenImpl implements CodeGen {
         byte baseAddrReg = backend.allocReg();
         backend.allocArray(baseAddrReg);
 
-        return new AttribImpl(Attrib.RegAddress, arrayType, token);
+        AttribImpl attrib = new AttribImpl(Attrib.RegAddress, arrayType, token);
+        attrib.setRegister(baseAddrReg);
+        return attrib;
     }
 
     @Override
@@ -150,7 +152,7 @@ public class CodeGenImpl implements CodeGen {
 
     @Override
     public void setParamOffset(Symbol sym, int pos) {
-
+        sym.setOffset(sym.getOffset() + pos * 4);
     }
 
     @Override
@@ -159,8 +161,26 @@ public class CodeGenImpl implements CodeGen {
 
         arr.setKind(Attrib.ArrayElement);
         arr.setType(type.subarray());
-        //arr.setOffset(arr.);
 
+        byte offsetReg = backend.allocReg();
+        byte baseAddrReg = backend.allocReg();
+        backend.loadWord(baseAddrReg, arr.getOffset(), arr.isGlobal());
+
+
+        byte indexReg = backend.allocReg();
+        if (index.getKind() == Attrib.Constant) {
+            IntType t = (IntType) index.getType();
+            backend.loadConst(indexReg, t.getValue());
+        }
+        else if (index.getKind() == Attrib.RegValue) {
+            indexReg = index.getRegister();
+        }
+
+        backend.arrayOffset(offsetReg, baseAddrReg, indexReg);
+        backend.freeReg(indexReg);
+        backend.freeReg(baseAddrReg);
+        index.setKind(Attrib.Invalid);
+        arr.setRegister(offsetReg);
     }
 
     @Override
@@ -173,11 +193,16 @@ public class CodeGenImpl implements CodeGen {
         if (!(arr.getType() instanceof ArrayType)) {
             throw new YAPLException(CompilerError.ArrayLenNotArray, arr.getToken(), null);
         }
-        ArrayType arrtype = (ArrayType) arr.getType();
 
-        //byte reg = loadReg(arr);   // arr represents an address operand, so load its value!
-        //backend.arrayLength(reg, reg);
+        byte reg = backend.allocReg();
+        byte baseAddr = backend.allocReg();
+        backend.loadWord(baseAddr, arr.getOffset(), arr.isGlobal());
+        backend.arrayLength(reg, baseAddr);
+        backend.freeReg(baseAddr);
+
+        arr.setRegister(reg);
         arr.setType(new IntType());
+        arr.setKind(Attrib.RegValue);
         return arr;
     }
 
@@ -195,33 +220,122 @@ public class CodeGenImpl implements CodeGen {
             throw new YAPLException(CompilerError.TypeMismatchAssign, lvalue.getToken(), null);
         }
 
-        if (expr.getType() instanceof IntType) {
-            IntType t = (IntType) expr.getType();
-            if (t.getValue() != null) {
+        if (lvalue.getKind() == Attrib.ArrayElement) {
+            if (expr.getKind() == Attrib.Constant) {
+                if (expr.getType() instanceof IntType) {
+                    IntType t = (IntType) expr.getType();
+                    if (t.getValue() != null) {
+                        byte register = backend.allocReg();
+                        backend.loadConst(register, t.getValue());
+                        backend.storeWordReg(register, lvalue.getRegister());
+                        backend.freeReg(register);
+                    }
+                }
+
+                if (expr.getType() instanceof BoolType) {
+                    BoolType t = (BoolType) expr.getType();
+                    if (t.getValue() != null) {
+                        byte register = backend.allocReg();
+                        backend.loadConst(register, backend.boolValue(t.getValue()));
+                        backend.storeWordReg(register, lvalue.getRegister());
+                        backend.freeReg(register);
+                    }
+                }
+                freeReg(lvalue);
+                return;
+            }
+
+            if (expr.getKind() == Attrib.MemoryOperand) {
                 byte register = backend.allocReg();
-                backend.loadConst(register, t.getValue());
+                backend.loadWord(register, expr.getOffset(), expr.isGlobal());
+                backend.storeWordReg(register, lvalue.getRegister());
+                backend.freeReg(register);
+                freeReg(lvalue);
+                return;
+            }
+
+            if (expr.getKind() == Attrib.ArrayElement) {
+                byte register = backend.allocReg();
+                backend.loadWordReg(register, expr.getRegister());
+                backend.storeWordReg(register, lvalue.getRegister());
+                backend.freeReg(register);
+                freeReg(lvalue);
+                freeReg(expr);
+                return;
+            }
+
+            if (expr.getKind() == Attrib.RegValue) {
+                backend.storeWordReg(expr.getRegister(), lvalue.getRegister());
+                freeReg(expr);
+                freeReg(lvalue);
+                return;
+            }
+
+            if (expr.getKind() == Attrib.RegAddress) {
+                backend.storeWordReg(expr.getRegister(), lvalue.getRegister());
+                freeReg(expr);
+                freeReg(lvalue);
+                return;
+            }
+            System.out.println("could not handle attrib of kind " + expr.getKind() + " in assign method!");
+        } else {
+            if (expr.getKind() == Attrib.Constant) {
+                if (expr.getType() instanceof IntType) {
+                    IntType t = (IntType) expr.getType();
+                    if (t.getValue() != null) {
+                        byte register = backend.allocReg();
+                        backend.loadConst(register, t.getValue());
+                        backend.storeWord(register, lvalue.getOffset(), lvalue.isGlobal());
+                        backend.freeReg(register);
+                    }
+                }
+
+                if (expr.getType() instanceof BoolType) {
+                    BoolType t = (BoolType) expr.getType();
+                    if (t.getValue() != null) {
+                        byte register = backend.allocReg();
+                        backend.loadConst(register, backend.boolValue(t.getValue()));
+                        backend.storeWord(register, lvalue.getOffset(), lvalue.isGlobal());
+                        backend.freeReg(register);
+                    }
+                }
+                return;
+            }
+
+            if (expr.getKind() == Attrib.MemoryOperand) {
+                byte register = backend.allocReg();
+                backend.loadWord(register, expr.getOffset(), expr.isGlobal());
                 backend.storeWord(register, lvalue.getOffset(), lvalue.isGlobal());
                 backend.freeReg(register);
+                freeReg(lvalue);
+                return;
             }
+
             if (expr.getKind() == Attrib.RegValue) {
                 backend.storeWord(expr.getRegister(), lvalue.getOffset(), lvalue.isGlobal());
                 freeReg(expr);
+                freeReg(lvalue);
+                return;
+            }
+
+            if (expr.getKind() == Attrib.ArrayElement) {
+                byte register = backend.allocReg();
+                backend.loadWordReg(register, expr.getRegister());
+                backend.storeWord(register, lvalue.getOffset(), lvalue.isGlobal());
+                backend.freeReg(register);
+                freeReg(expr);
+                freeReg(lvalue);
+            }
+
+            if (expr.getKind() == Attrib.RegAddress) {
+                backend.storeWord(expr.getRegister(), lvalue.getOffset(), lvalue.isGlobal());
+                freeReg(expr);
+                freeReg(lvalue);
+                return;
             }
         }
 
-        if (expr.getType() instanceof BoolType) {
-            BoolType t = (BoolType) expr.getType();
-            if (t.getValue() != null) {
-                byte register = backend.allocReg();
-                backend.loadConst(register, backend.boolValue(t.getValue()));
-                backend.storeWord(register, lvalue.getOffset(), lvalue.isGlobal());
-                backend.freeReg(register);
-            }
-            if (expr.getKind() == Attrib.RegValue) {
-                backend.storeWord(expr.getRegister(), lvalue.getOffset(), lvalue.isGlobal());
-                freeReg(expr);
-            }
-        }
+        System.out.println("Could not handle expr of kind '" + expr.getKind() + "' in assign method");
     }
 
     @Override
@@ -233,25 +347,31 @@ public class CodeGenImpl implements CodeGen {
         byte regX = x.getRegister();
         if (regX == -1) {
             regX = backend.allocReg();
-            x.setRegister(regX);
+        }
+        if (x.getKind() == Attrib.Constant) {
             IntType t = (IntType) x.getType();
-            if (t.getValue() != null) {
-                backend.loadConst(regX, t.getValue());
-            }
+            backend.loadConst(regX, t.getValue());
+        } else if (x.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(regX, x.getOffset(), x.isGlobal());
+        } else if (x.getKind() == Attrib.ArrayElement) {
+            backend.loadWordReg(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegValue) {
+            backend.move(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegAddress) {
+            backend.loadWordReg(regX, x.getRegister());
         }
 
         switch (op.kind) {
             case PLUS:
                 break;
             case MINUS:
-                backend.neg(x.getRegister(), x.getRegister());
+                backend.neg(regX, regX);
                 break;
         }
 
-        x.setKind(Attrib.RegValue);
-        x.setConstant(false);
-        x.setType(new IntType());
-        return x;
+        Attrib returnAttrib = new AttribImpl(Attrib.RegValue, new IntType(), null);
+        returnAttrib.setRegister(regX);
+        return returnAttrib;
     }
 
     @Override
@@ -263,56 +383,64 @@ public class CodeGenImpl implements CodeGen {
         byte regX = x.getRegister();
         if (regX == -1) {
             regX = backend.allocReg();
-            x.setRegister(regX);
-            IntType t = (IntType) x.getType();
-            if (t.getValue() != null) {
-                backend.loadConst(regX, t.getValue());
-            }
-            if (x.getKind() == Attrib.MemoryOperand) {
-                backend.loadWord(regX, x.getOffset(), x.isGlobal());
-            }
         }
+        if (x.getKind() == Attrib.Constant) {
+            IntType t = (IntType) x.getType();
+            backend.loadConst(regX, t.getValue());
+        } else if (x.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(regX, x.getOffset(), x.isGlobal());
+        } else if (x.getKind() == Attrib.ArrayElement) {
+            backend.loadWordReg(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegValue) {
+            backend.move(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegAddress) {
+            backend.loadWordReg(regX, x.getRegister());
+        }
+
         byte regY = y.getRegister();
         if (regY == -1) {
             regY = backend.allocReg();
-            y.setKind(Attrib.RegValue);
             y.setRegister(regY);
-            IntType t = (IntType) y.getType();;
-            if (t.getValue() != null) {
-                backend.loadConst(regY, t.getValue());
-            }
-            if (y.getKind() == Attrib.MemoryOperand) {
-                backend.loadWord(regY, y.getOffset(), y.isGlobal());
-            }
+        }
+        if (y.getKind() == Attrib.Constant) {
+            IntType t = (IntType) y.getType();
+            backend.loadConst(regY, t.getValue());
+        } else if (y.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(regY, y.getOffset(), y.isGlobal());
+        } else if (y.getKind() == Attrib.ArrayElement) {
+            backend.loadWordReg(regY, y.getRegister());
+        } else if (y.getKind() == Attrib.RegValue) {
+            backend.move(regY, y.getRegister());
+        } else if (y.getKind() == Attrib.RegAddress) {
+            backend.loadWordReg(regY, y.getRegister());
         }
 
         switch (op.kind) {
             case PLUS:
-                backend.add(x.getRegister(), x.getRegister(), y.getRegister());
+                backend.add(regX, regX, regY);
                 break;
             case MINUS:
                 byte reg = backend.allocReg();
-                backend.move(reg, y.getRegister());
+                backend.move(reg, regY);
                 backend.neg(reg, reg);
-                backend.add(x.getRegister(), x.getRegister(), reg);
+                backend.add(regX, regX, reg);
                 backend.freeReg(reg);
                 break;
             case MULT:
-                backend.mul(x.getRegister(), x.getRegister(), y.getRegister());
+                backend.mul(regX, regX, regY);
                 break;
             case DIV:
-                backend.div(x.getRegister(), x.getRegister(), y.getRegister());
+                backend.div(regX, regX, regY);
                 break;
             case MODULO:
-                backend.mod(x.getRegister(), x.getRegister(), y.getRegister());
+                backend.mod(regX, regX, regY);
                 break;
         }
 
         freeReg(y);
-        x.setKind(Attrib.RegValue);
-        x.setConstant(false);
-        x.setType(new IntType());
-        return x;
+        Attrib returnAttrib = new AttribImpl(Attrib.RegValue, new IntType(), null);
+        returnAttrib.setRegister(regX);
+        return returnAttrib;
     }
 
     @Override
@@ -324,65 +452,59 @@ public class CodeGenImpl implements CodeGen {
         byte regX = x.getRegister();
         if (regX == -1) {
             regX = backend.allocReg();
-            x.setRegister(regX);
-            IntType t = (IntType) x.getType();
-            if (t.getValue() != null) {
-                backend.loadConst(regX, t.getValue());
-            }
-            if (x.getKind() == Attrib.MemoryOperand) {
-                backend.loadWord(regX, x.getOffset(), x.isGlobal());
-            }
         }
+        if (x.getKind() == Attrib.Constant) {
+            IntType t = (IntType) x.getType();
+            backend.loadConst(regX, t.getValue());
+        } else if (x.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(regX, x.getOffset(), x.isGlobal());
+        } else if (x.getKind() == Attrib.ArrayElement) {
+            backend.loadWordReg(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegValue) {
+            backend.move(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegAddress) {
+            backend.loadWordReg(regX, x.getRegister());
+        }
+
         byte regY = y.getRegister();
         if (regY == -1) {
             regY = backend.allocReg();
-            y.setKind(Attrib.RegValue);
             y.setRegister(regY);
-            IntType t = (IntType) y.getType();;
-            if (t.getValue() != null) {
-                backend.loadConst(regY, t.getValue());
-            }
-            if (y.getKind() == Attrib.MemoryOperand) {
-                backend.loadWord(regY, y.getOffset(), y.isGlobal());
-            }
+        }
+        if (y.getKind() == Attrib.Constant) {
+            IntType t = (IntType) y.getType();
+            backend.loadConst(regY, t.getValue());
+        } else if (y.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(regY, y.getOffset(), y.isGlobal());
+        } else if (y.getKind() == Attrib.ArrayElement) {
+            backend.loadWordReg(regY, y.getRegister());
+        } else if (y.getKind() == Attrib.RegValue) {
+            backend.move(regY, y.getRegister());
+        } else if (y.getKind() == Attrib.RegAddress) {
+            backend.loadWordReg(regY, y.getRegister());
         }
 
         switch (op.kind) {
             case LESS:
-                backend.isLess(x.getRegister(), x.getRegister(), y.getRegister());
+                backend.isLess(regX, regX, regY);
                 break;
             case GREATER_EQUAL:
-                backend.isLessOrEqual(x.getRegister(), y.getRegister(), x.getRegister());
+                backend.isLessOrEqual(regX, regY, regX);
                 break;
             case LESS_EQUAL:
-                backend.isLessOrEqual(x.getRegister(), x.getRegister(), y.getRegister());
+                backend.isLessOrEqual(regX, regX, regY);
                 break;
             case GREATER:
-                backend.isLess(x.getRegister(), y.getRegister(), x.getRegister());
+                backend.isLess(regX, regY, regX);
                 break;
             default:
                 throw new YAPLException(CompilerError.Internal, op, null);
         }
 
-
         freeReg(y);
-        x.setKind(Attrib.RegValue);
-        x.setConstant(false);
-        x.setType(new BoolType());
-        return x;
-        /*byte xReg = loadReg(x);
-        byte yReg = loadReg(y);
-        switch(op.getKind()) {
-            case LESS:
-                backend.isLess(xReg, xReg, yReg);
-                break;
-            default:
-                throw new YAPLException(YAPLException.IllegalRelOpType, op);
-        }
-        x.setType(new BoolType());
-        x.setConstant(x.isConstant() && y.isConstant());
-        freeReg(y);*/
-        //return new AttribImpl(Attrib.Constant, new BoolType(), op);
+        Attrib returnAttrib = new AttribImpl(Attrib.RegValue, new BoolType(), null);
+        returnAttrib.setRegister(regX);
+        return returnAttrib;
     }
 
     @Override
@@ -395,69 +517,62 @@ public class CodeGenImpl implements CodeGen {
         byte regX = x.getRegister();
         if (regX == -1) {
             regX = backend.allocReg();
-            x.setRegister(regX);
-            Type type = x.getType();
-            if (type instanceof IntType) {
-                IntType t = (IntType) type;
-                if (t.getValue() != null) {
-                    backend.loadConst(regX, t.getValue());
-                }
-                if (x.getKind() == Attrib.MemoryOperand) {
-                    backend.loadWord(regX, x.getOffset(), x.isGlobal());
-                }
-            }
-            if (type instanceof BoolType) {
-                BoolType t = (BoolType) type;
-                if (t.getValue() != null) {
-                    backend.loadConst(regX, backend.boolValue(t.getValue()));
-                }
-                if (x.getKind() == Attrib.MemoryOperand) {
-                    backend.loadWord(regX, x.getOffset(), x.isGlobal());
-                }
-            }
         }
+        if (x.getKind() == Attrib.Constant) {
+            if (x.getType() instanceof IntType) {
+                IntType t = (IntType) x.getType();
+                backend.loadConst(regX, t.getValue());
+            } else if (x.getType() instanceof BoolType) {
+                BoolType t = (BoolType) x.getType();
+                backend.loadConst(regX, backend.boolValue(t.getValue()));
+            }
+        } else if (x.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(regX, x.getOffset(), x.isGlobal());
+        } else if (x.getKind() == Attrib.ArrayElement) {
+            backend.loadWordReg(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegValue) {
+            backend.move(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegAddress) {
+            backend.loadWordReg(regX, x.getRegister());
+        }
+
         byte regY = y.getRegister();
         if (regY == -1) {
             regY = backend.allocReg();
-            y.setKind(Attrib.RegValue);
             y.setRegister(regY);
-            Type type = y.getType();
-            if (type instanceof IntType) {
-                IntType t = (IntType) type;
-                if (t.getValue() != null) {
-                    backend.loadConst(regY, t.getValue());
-                }
-                if (x.getKind() == Attrib.MemoryOperand) {
-                    backend.loadWord(regY, y.getOffset(), y.isGlobal());
-                }
+        }
+        if (y.getKind() == Attrib.Constant) {
+            if (y.getType() instanceof IntType) {
+                IntType t = (IntType) y.getType();
+                backend.loadConst(regY, t.getValue());
+            } else if (y.getType() instanceof BoolType) {
+                BoolType t = (BoolType) y.getType();
+                backend.loadConst(regY, backend.boolValue(t.getValue()));
             }
-            if (type instanceof BoolType) {
-                BoolType t = (BoolType) type;
-                if (t.getValue() != null) {
-                    backend.loadConst(regY, backend.boolValue(t.getValue()));
-                }
-                if (y.getKind() == Attrib.MemoryOperand) {
-                    backend.loadWord(regY, y.getOffset(), y.isGlobal());
-                }
-            }
+        } else if (y.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(regY, y.getOffset(), y.isGlobal());
+        } else if (y.getKind() == Attrib.ArrayElement) {
+            backend.loadWordReg(regY, y.getRegister());
+        } else if (y.getKind() == Attrib.RegValue) {
+            backend.move(regY, y.getRegister());
+        } else if (y.getKind() == Attrib.RegAddress) {
+            backend.loadWordReg(regY, y.getRegister());
         }
 
         switch (op.kind) {
             case EQUAL:
-                backend.isEqual(x.getRegister(), x.getRegister(), y.getRegister());
+                backend.isEqual(regX, regX, regY);
                 break;
             case NOT_EQUAL:
-                backend.isEqual(x.getRegister(), x.getRegister(), y.getRegister());
-                backend.not(x.getRegister(), x.getRegister());
+                backend.isEqual(regX, regX, regY);
+                backend.not(regX, regX);
                 break;
         }
 
         freeReg(y);
-        x.setKind(Attrib.RegValue);
-        x.setConstant(false);
-        x.setType(new BoolType());
-        return x;
-        //return new AttribImpl(Attrib.Constant, new BoolType(), op);
+        Attrib returnAttrib = new AttribImpl(Attrib.RegValue, new BoolType(), null);
+        returnAttrib.setRegister(regX);
+        return returnAttrib;
     }
 
     @Override
@@ -469,46 +584,53 @@ public class CodeGenImpl implements CodeGen {
         byte regX = x.getRegister();
         if (regX == -1) {
             regX = backend.allocReg();
-            x.setRegister(regX);
-            BoolType t = (BoolType) x.getType();
-            if (t.getValue() != null) {
-                backend.loadConst(regX, backend.boolValue(t.getValue()));
-            }
-            if (x.getKind() == Attrib.MemoryOperand) {
-                backend.loadWord(regX, x.getOffset(), x.isGlobal());
-            }
         }
+        if (x.getKind() == Attrib.Constant) {
+            BoolType t = (BoolType) x.getType();
+            backend.loadConst(regX, backend.boolValue(t.getValue()));
+        } else if (x.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(regX, x.getOffset(), x.isGlobal());
+        } else if (x.getKind() == Attrib.ArrayElement) {
+            backend.loadWordReg(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegValue) {
+            backend.move(regX, x.getRegister());
+        } else if (x.getKind() == Attrib.RegAddress) {
+            backend.loadWordReg(regX, x.getRegister());
+        }
+
         byte regY = y.getRegister();
         if (regY == -1) {
             regY = backend.allocReg();
-            y.setKind(Attrib.RegValue);
             y.setRegister(regY);
-            BoolType t = (BoolType) y.getType();;
-            if (t.getValue() != null) {
-                backend.loadConst(regY, backend.boolValue(t.getValue()));
-            }
-            if (y.getKind() == Attrib.MemoryOperand) {
-                backend.loadWord(regY, y.getOffset(), y.isGlobal());
-            }
+        }
+        if (y.getKind() == Attrib.Constant) {
+            BoolType t = (BoolType) y.getType();
+            backend.loadConst(regY, backend.boolValue(t.getValue()));
+        } else if (y.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(regY, y.getOffset(), y.isGlobal());
+        } else if (y.getKind() == Attrib.ArrayElement) {
+            backend.loadWordReg(regY, y.getRegister());
+        } else if (y.getKind() == Attrib.RegValue) {
+            backend.move(regY, y.getRegister());
+        } else if (y.getKind() == Attrib.RegAddress) {
+            backend.loadWordReg(regY, y.getRegister());
         }
 
         switch (op.kind) {
             case AND:
-                backend.and(x.getRegister(), x.getRegister(), y.getRegister());
+                backend.and(regX, regX, regY);
                 break;
             case OR:
-                backend.or(x.getRegister(), x.getRegister(), y.getRegister());
+                backend.or(regX, regX, regY);
                 break;
             default:
                 throw new YAPLException(CompilerError.Internal, op, null);
         }
 
         freeReg(y);
-        x.setType(new BoolType());
-        x.setConstant(false);
-        x.setKind(Attrib.RegValue);
-        return x;
-        //return new AttribImpl(Attrib.RegValue, new BoolType(), op);
+        Attrib returnAttrib = new AttribImpl(Attrib.RegValue, new BoolType(), null);
+        returnAttrib.setRegister(regX);
+        return returnAttrib;
     }
 
     @Override
@@ -520,9 +642,11 @@ public class CodeGenImpl implements CodeGen {
         ProcedureType procType = (ProcedureType) proc.getType();
         backend.enterProc(proc.getName(), procType.getParameterList().size());
 
+        int i = 0;
         for (Symbol sym : procType.getParameterList()) {
-            int addr = backend.allocStack(4, sym.getName());
-            sym.setOffset(addr);
+            sym.setGlobal(false);
+            sym.setOffset(backend.paramOffset(i));
+            i++;
         }
     }
 
@@ -569,6 +693,12 @@ public class CodeGenImpl implements CodeGen {
                 backend.loadWord(register, arg.getOffset(), arg.isGlobal());
                 backend.passArg(i, register);
                 backend.freeReg(register);
+            } else if (arg.getKind() == Attrib.ArrayElement) {
+                byte register = backend.allocReg();
+                backend.loadWordReg(register, arg.getRegister());
+                backend.passArg(i, register);
+                backend.freeReg(register);
+                freeReg(arg);
             }
         }
         backend.callProc((byte) -1, proc.getName());
