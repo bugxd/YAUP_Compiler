@@ -29,7 +29,6 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     if (outputStream == null) {
       throw new IllegalArgumentException("outputStream must not be null!");
     }
-    //outputStream.append(".globl main\n");
 
   }
 
@@ -578,22 +577,33 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     emitLabel(label, "");
 
     registers.getStackPointerRegister().requestNewOffset();
+
+    int fpAddress = allocStack(wordSize(), "make place for old frame pointer");
+    outputStream.append("\tsw\t$fp\t0($sp)   #store old framepointer");
+    //storeWord(registers.getFramePointerRegister().getRegisterNumber(), fpAddress, false);
+    comment("set new framepointer to old stack value + wordSize(), such that the old framepointer can be addressed with 0(fp)");
+    move(registers.getFramePointerRegister().getRegisterNumber(), registers.getStackPointerRegister().getRegisterNumber());
+
+    registers.getStackPointerRegister().deleteCurrentOffset();
+    registers.getStackPointerRegister().requestNewOffset();
+
     int raAddress = allocStack(wordSize(), "make place for return address");
     storeWord(registers.getReturnAddressRegister().getRegisterNumber(), raAddress, false);
 
     /** REGISTER STORING ACTION **/
 
-    int registersStorage = allocStack(wordSize(), "store all saved and temporary registers");
+    //int registersStorage = allocStack(wordSize(), "store all saved and temporary registers");
     List<Register> registerList = new ArrayList<>();
     registerList.addAll(registers.getTemporaryRegisters());
     registerList.addAll(registers.getSavedRegisters());
 
     for (int i = 0; i < registerList.size(); i++) {
-      storeWord(registerList.get(i).getRegisterNumber(), registersStorage - i*wordSize(), false);
+      storeWord(registerList.get(i).getRegisterNumber(), allocStack(wordSize(), "store " + registerList.get(i).getName()), false);
+      //storeWord(registerList.get(i).getRegisterNumber(), registersStorage - i*wordSize(), false);
     }
     comment("Finished storing registers!!");
 
-    registers.getStackPointerRegister().allocateBytes(nParams*wordSize(), wordSize());
+    //registers.getStackPointerRegister().allocateBytes(nParams*wordSize(), wordSize());
   }
 
   @Override
@@ -603,8 +613,8 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     emitLabel(label, "procedure_epilogue");
     move(registers.getStackPointerRegister().getRegisterNumber(), registers.getFramePointerRegister().getRegisterNumber());
 
-    comment("Eliminate place on stack where preserved arguments (old frame pointer) were stored");
-    addConst(registers.getStackPointerRegister().getRegisterNumber(), registers.getStackPointerRegister().getRegisterNumber(), NUMBER_RESERVED_PASSED_STACKARGUMENTS * wordSize()); // eliminate place on stack where old framepointer was stored
+    //comment("Eliminate place on stack where preserved arguments (old frame pointer) were stored");
+    //addConst(registers.getStackPointerRegister().getRegisterNumber(), registers.getStackPointerRegister().getRegisterNumber(), NUMBER_RESERVED_PASSED_STACKARGUMENTS * wordSize()); // eliminate place on stack where old framepointer was stored
 
 
     comment("load stored registers");
@@ -645,9 +655,9 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   public void prepareProcCall(int numArgs) {
     changeSegment(Segment.TEXT);
 
-    int oldFramePointerStorage = allocStack(wordSize(), "place for old frame pointer");
-    storeWord(registers.getFramePointerRegister().getRegisterNumber(), oldFramePointerStorage, false);
-    move(registers.getFramePointerRegister().getRegisterNumber(), registers.getStackPointerRegister().getRegisterNumber());
+    //int oldFramePointerStorage = allocStack(wordSize(), "place for old frame pointer");
+    //storeWord(registers.getFramePointerRegister().getRegisterNumber(), oldFramePointerStorage, false);
+    //move(registers.getFramePointerRegister().getRegisterNumber(), registers.getStackPointerRegister().getRegisterNumber());
 
     int bytes = numArgs * wordSize();
     allocStack(bytes, "push stack frame");
@@ -663,7 +673,14 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
   public void passArg(int arg, byte reg) {
     changeSegment(Segment.TEXT);
 
-    storeWord(reg, paramOffset(arg), false);
+    outputStream.println(
+            format("\tsw\t{0}\t{1}({2})",
+                    registers.getRegisterByNumber(reg).getName(),
+                    arg*wordSize(),
+                    registers.getStackPointerRegister().getName()
+            )
+    );
+    //storeWord(reg, allocStack(wordSize(), "argument_" + arg)/*paramOffset(arg)*/, false);
   }
 
   @Override
@@ -675,12 +692,13 @@ public final class BackendMIPS implements yapl.interfaces.BackendAsmRM {
     if (reg != -1) {
       move(reg, registers.getV0().getRegisterNumber());
     }
-    registers.getStackPointerRegister().freeBytes(wordSize()*(NUMBER_RESERVED_PASSED_STACKARGUMENTS + 1), wordSize());
+    //registers.getStackPointerRegister().freeBytes(wordSize()*(NUMBER_RESERVED_PASSED_STACKARGUMENTS + 1), wordSize());
   }
 
   @Override
   public int paramOffset(int index) {
-    return -(index+NUMBER_RESERVED_INNER_STACKARGUMENTS+NUMBER_RESERVED_PASSED_STACKARGUMENTS) * wordSize();
+    return (index+1)*wordSize();
+    //return -(index+NUMBER_RESERVED_INNER_STACKARGUMENTS+NUMBER_RESERVED_PASSED_STACKARGUMENTS) * wordSize();
   }
 
   private void writePredefinedProcedures() {
