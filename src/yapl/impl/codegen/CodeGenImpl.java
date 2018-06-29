@@ -140,6 +140,7 @@ public class CodeGenImpl implements CodeGen {
         byte baseAddrReg = backend.allocReg();
         backend.allocArray(baseAddrReg);
 
+        //AttribImpl attrib = new AttribImpl(Attrib.MemoryOperand, arrayType, token);
         AttribImpl attrib = new AttribImpl(Attrib.RegAddress, arrayType, token);
         attrib.setRegister(baseAddrReg);
         return attrib;
@@ -174,6 +175,12 @@ public class CodeGenImpl implements CodeGen {
         }
         else if (index.getKind() == Attrib.RegValue) {
             indexReg = index.getRegister();
+        } else if (index.getKind() == Attrib.MemoryOperand) {
+            backend.loadWord(indexReg, index.getOffset(), index.isGlobal());
+        } else if (index.getKind() == Attrib.ArrayElement) {
+            byte register = backend.allocReg();
+            backend.loadWordReg(register, index.getRegister());
+            freeReg(index);
         }
 
         backend.arrayOffset(offsetReg, baseAddrReg, indexReg);
@@ -657,11 +664,38 @@ public class CodeGenImpl implements CodeGen {
 
     @Override
     public void returnFromProc(Symbol proc, Attrib returnVal) throws YAPLException {
-        if (returnVal.getRegister() == -1) {
-            returnVal.setRegister(backend.allocReg());
+        if (returnVal == null || returnVal.getType() instanceof VoidType) {
+            backend.returnFromProc(proc.getName()+"_end", (byte)-1);
+        } else {
+            if (returnVal.getKind() == Attrib.RegValue) {
+                backend.returnFromProc(proc.getName()+"_end", returnVal.getRegister());
+                freeReg(returnVal);
+            }
+            if (returnVal.getKind() == Attrib.RegAddress) {
+                backend.returnFromProc(proc.getName()+"_end", returnVal.getRegister());
+                freeReg(returnVal);
+                //System.out.println("MESSAGE: NO IDEA WHAT TO DO HERE");//backend.
+            }
+            if (returnVal.getKind() == Attrib.MemoryOperand) {
+                byte reg = backend.allocReg();
+                backend.loadWord(reg, returnVal.getOffset(), returnVal.isGlobal());
+                backend.returnFromProc(proc.getName()+"_end", reg);
+                freeReg(returnVal);
+            }
+            if (returnVal.getKind() == Attrib.ArrayElement) {
+                byte reg = backend.allocReg();
+                backend.loadWordReg(reg, returnVal.getRegister());
+                backend.returnFromProc(proc.getName()+"_end", reg);
+                freeReg(returnVal);
+            }
         }
 
-        backend.returnFromProc(proc.getName()+"_end", returnVal.getRegister());
+        /*
+        if (returnVal.getRegister() == -1) {
+            returnVal.setRegister(backend.allocReg());
+        }*/
+
+
     }
 
     @Override
@@ -701,9 +735,32 @@ public class CodeGenImpl implements CodeGen {
                 freeReg(arg);
             }
         }
-        backend.callProc((byte) -1, proc.getName());
 
-        return new AttribImpl(Attrib.Constant, type.getReturnType(), tok);
+        if (type.getReturnType() instanceof VoidType) {
+            backend.callProc((byte) -1, proc.getName());
+            return new AttribImpl(Attrib.Invalid, type.getReturnType(), tok);
+        } else if (type.getReturnType() instanceof BoolType || type.getReturnType() instanceof IntType) {
+            byte reg = backend.allocReg();
+            backend.callProc(reg, proc.getName());
+            Attrib attrib = new AttribImpl(Attrib.RegValue, type.getReturnType(), tok);
+            attrib.setRegister(reg);
+            return attrib;
+        } else if (type.getReturnType() instanceof ArrayType) {
+            byte reg = backend.allocReg();
+            backend.callProc(reg, proc.getName());
+            Attrib attrib = new AttribImpl(Attrib.RegAddress, type.getReturnType(), tok);
+            attrib.setRegister(reg);
+            return attrib;
+        } else if (type.getReturnType() instanceof RecordType) {
+            byte reg = backend.allocReg();
+            backend.callProc(reg, proc.getName());
+            Attrib attrib = new AttribImpl(Attrib.RegAddress, type.getReturnType(), tok);
+            attrib.setRegister(reg);
+            return attrib;
+        }
+
+        System.out.println("Could not determine correct callProc behavior for type " + type.getReturnType().getClass().getSimpleName());
+        return null;
     }
 
     @Override
@@ -720,6 +777,7 @@ public class CodeGenImpl implements CodeGen {
             throw new YAPLException(CompilerError.CondNotBool, condition.getToken(), null);
         }
         backend.branchIf(condition.getRegister(), false, label);
+        freeReg(condition);
     }
 
     @Override
