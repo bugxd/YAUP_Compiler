@@ -662,6 +662,7 @@ boolean ReturnStatement(Type neededReturnType, Token parTok, Symbol parent) thro
             }
         }
         returnAttrib.checkReturnTypeCompatibleWith(neededReturnType, parent);
+        codegen.returnFromProc(parent, returnAttrib);
         return returnFound;
     }
 }
